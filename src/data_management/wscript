@@ -5,10 +5,9 @@ def build(ctx):
 
     ctx(
         features='run_do_script',
-        source='add_variables.do',
+        source='generate_data.do',
         target=[
-            ctx.path_to(ctx, 'OUT_DATA', 'log', 'add_variables.log'),
-            ctx.path_to(ctx, 'OUT_DATA', 'ajrcomment_all.dta')
-        ],
-        deps=[ctx.path_to(ctx, 'IN_DATA', 'ajrcomment.dta')]
+            ctx.path_to(ctx, 'OUT_DATA', 'log', 'generate_data.log'),
+            ctx.path_to(ctx, 'OUT_DATA', 'data_gen.dta')
+        ]
     )
