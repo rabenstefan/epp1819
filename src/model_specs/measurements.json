@@ -4,55 +4,55 @@
         "beta1": 1, 
         "beta2": 1,
         "z": 1.0,
-        "var": sqrt(0.5)
+        "var": 0.5
     },
     {   "factor": "fac1",
         "beta1": 1, 
         "beta2": 1,
         "z": 1.2,
-        "var": sqrt(0.5) 
+        "var": 0.5
         
     },
     {   "factor": "fac1",
         "beta1": 1, 
         "beta2": 1,
         "z": 1.4,
-        "var": sqrt(0.5)
+        "var": 0.5
     },
     {   "factor": "fac2",
         "beta1": 1, 
         "beta2": 1,
         "z": 1.0,
-        "var": sqrt(0.5)
+        "var": 0.5
     },
     {   "factor": "fac2",
         "beta1": 1, 
         "beta2": 1,
         "z": 0.8,
-        "var": sqrt(0.5)
+        "var": 0.5
     },
     {   "factor": "fac2",
         "beta1": 1, 
         "beta2": 1,
         "z": 0.6,
-        "var": sqrt(0.5)
+        "var": 0.5
     },
     {   "factor": "fac3",
         "beta1": 1, 
         "beta2": 1,
         "z": 1.0,
-        "var": sqrt(0.5)
+        "var": 0.5
     },
     {   "factor": "fac3",
         "beta1": 1, 
         "beta2": 1,
         "z": 1.2, 
-        "var": sqrt(0.5)
+        "var": 0.5
     },
     {   "factor": "fac3",
         "beta1": 1, 
         "beta2": 1,
         "z": 0.8,
-        "var": sqrt(0.5)
+        "var": 0.5
     }
 ]

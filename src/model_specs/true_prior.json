@@ -1,11 +1,11 @@
 [
     {
-        "var": sqrt(0.2)
+        "var_p": 0.2
     },
     {
-        "var": sqrt(0.2)
+        "var_p": 0.2
     },
     {
-        "var": sqrt(0.2)
+        "var_p": 0.2
     }
 ]

@@ -5,12 +5,12 @@
         "gamma_1": 0.6,
         "gamma_2": 0.2, 
         "gamma_3": 0.2,
-        "var" : sqrt(0.1),
+        "var_t" : 0.1
     },
     {
         "gamma_2": 0.6,
-        "var2" : sqrt(0.1)
-    },
+        "var_t" : 0.1
+    }
 ]
     
 
