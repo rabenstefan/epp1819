@@ -47,7 +47,7 @@ def convert_model_json_to_stata(task):
     return task.outputs[0].write(tgt_content)
 
 
-def convert_geography_json_to_stata(task):
+def convert_json_to_stata(task):
     """Convert the geography model specification in ``source[0]`` to
     a Stata do-file.
 
@@ -56,15 +56,15 @@ def convert_geography_json_to_stata(task):
 
     """
 
-    geo_dict_list = json.load(open(task.inputs[0].abspath()))
+    dict_list = json.load(open(task.inputs[0].abspath()))
     model_name = os.path.splitext(task.inputs[0].name)[0]
 
     tgt_content = STATA_MODEL_COMMENT.format(
         model_name, task.inputs[0].abspath()
     )
     i = 1
-    for geo_dict in geo_dict_list:
-        for key, val in geo_dict.items():
+    for dict in dict_list:
+        for key, val in dict.items():
             # Adjust for Stata string notation
             if isinstance(val, (str, unicode)):
                 val = '"{}"'.format(val)
@@ -76,15 +76,8 @@ def convert_geography_json_to_stata(task):
 def build(ctx):
 
     for node in ctx.path.ant_glob("*.json"):
-        if node.name == 'geography.json':
             ctx(
-                rule=convert_geography_json_to_stata,
-                source=node,
-                target=node.change_ext('.do'),
-            )
-        else:
-            ctx(
-                rule=convert_model_json_to_stata,
+                rule=convert_json_to_stata,
                 source=node,
                 target=node.change_ext('.do'),
             )
