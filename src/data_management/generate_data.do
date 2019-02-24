@@ -1,85 +1,68 @@
-clear
-set mem 400m
-cd C:\Users\ASUS\Desktop\chs_ex2
+/*
+Needs some explanation.
+*/
+
+
+
+// Header do-file with path definitions, those end up in global macros.
+include project_paths
+log using `"${PATH_OUT_DATA}/log/`1'.log"', replace
+
+
+// Read in the model controls
+ // measurements, transition ve json file'lari okuyacak.
+do `"${PATH_OUT_MODEL_SPECS}/measurements"'
+do `"${PATH_OUT_MODEL_SPECS}/transitions"'
+do `"${PATH_OUT_MODEL_SPECS}/true_prior"'
 
 set obs 4000
 gen caseid = _n
+set seed 12345
 
 gen x1 = uniform()
 gen x2 = 1
-gen f11  = sqrt(0.2)*invnorm(uniform())
-gen f21  = sqrt(0.2)*invnorm(uniform())
-gen f31  = sqrt(0.2)*invnorm(uniform())
+forvalues K = 1 / 3 {
+	
+	gen fac`K'1  = sqrt(${var_p_`K'})*invnorm(uniform())
+}
 
-gen e11  = sqrt(0.5)*invnorm(uniform())
-gen e21  = sqrt(0.5)*invnorm(uniform())
-gen e31  = sqrt(0.5)*invnorm(uniform())
-gen e41  = sqrt(0.5)*invnorm(uniform())
-gen e51  = sqrt(0.5)*invnorm(uniform())
-gen e61  = sqrt(0.5)*invnorm(uniform())
-gen e71  = sqrt(0.5)*invnorm(uniform())
-gen e81  = sqrt(0.5)*invnorm(uniform())
-gen e91  = sqrt(0.5)*invnorm(uniform())
+forvalues N = 1 / 9 {
 
-gen y11  = 1.0*x1 + 1.0*x2 + 1.0*f11 + e11
-gen y21  = 1.0*x1 + 1.0*x2 + 1.2*f11 + e21
-gen y31  = 1.0*x1 + 1.0*x2 + 1.4*f11 + e31
-gen y41  = 1.0*x1 + 1.0*x2 + 1.0*f21 + e41
-gen y51  = 1.0*x1 + 1.0*x2 + 0.8*f21 + e51
-gen y61  = 1.0*x1 + 1.0*x2 + 0.6*f21 + e61
-gen y71  = 1.0*x1 + 1.0*x2 + 1.0*f31 + e71
-gen y81  = 1.0*x1 + 1.0*x2 + 1.2*f31 + e81
-gen y91  = 1.0*x1 + 1.0*x2 + 0.8*f31 + e91
+    gen y`N'1  = ${beta1_`N'}*x1 + ${beta2_`N'}*x2 + ${z_`N'}*${factor_`N'} + ///
+				 sqrt(${var_`N'})*invnorm(uniform())
+}
 
 local t = 2
 	while `t' < 9 {
 	local j = `t'-1
-	gen u1`t'  = sqrt(0.1)*invnorm(uniform())
-	gen u2`t'  = sqrt(0.1)*invnorm(uniform())
-	gen a = exp(-0.5*f1`j')
-	gen b = exp(-0.5*f2`j')
-	gen c = exp(-0.5*f3`j')
-	gen f1`t'  = (-1.0/0.5)*log(0.6*a + 0.2*b + 0.2*c) + u1`t'
-	gen f2`t'  =  0.6*f2`j'	+ u2`t'
-	gen f3`t'  =  1.0*f3`j'
-	gen e1`t'  = sqrt(0.5)*invnorm(uniform())
-	gen e2`t'  = sqrt(0.5)*invnorm(uniform())
-	gen e3`t'  = sqrt(0.5)*invnorm(uniform())
-	gen e4`t'  = sqrt(0.5)*invnorm(uniform())
-	gen e5`t'  = sqrt(0.5)*invnorm(uniform())
-	gen e6`t'  = sqrt(0.5)*invnorm(uniform())
-	gen y1`t'  = 1.0*x1 + 1.0*x2 + 1.0*f1`t' + e1`t'
-	gen y2`t'  = 1.0*x1 + 1.0*x2 + 1.2*f1`t' + e2`t'
-	gen y3`t'  = 1.0*x1 + 1.0*x2 + 1.4*f1`t' + e3`t'
-	gen y4`t'  = 1.0*x1 + 1.0*x2 + 1.0*f2`t' + e4`t'
-	gen y5`t'  = 1.0*x1 + 1.0*x2 + 0.8*f2`t' + e5`t'
-	gen y6`t'  = 1.0*x1 + 1.0*x2 + 0.6*f2`t' + e6`t'
-	gen y7`t'  = y7`j'
-	gen y8`t'  = y8`j'
-	gen y9`t'  = y9`j'
-	drop a b c
-	local t = `t' + 1
+
+	gen fac1`t' = (${lambda_1}/${phi_1})*log(${gamma1_1}*exp(${phi_1}* ///
+				   ${lambda_1}*fac1`j') + ${gamma2_1}*exp(${phi_1}*fac2`j') +  ///
+				   ${gamma3_1}*exp(${phi_1}*fac3`j')) + ///
+				   ${var_u_1}*invnorm(uniform()) 
+	gen fac2`t' = ${gamma2_2}*fac2`j' + ${var_u_2}*invnorm(uniform())   
+	gen fac3`t'= fac3`j'
+	
+	
+
+forvalues N = 1 / 6 {
+	
+		gen y`N'`t'  = ${beta1_`N'}*x1 + ${beta2_`N'}*x2 + ${z_`N'}*${factor_`N'}`t' + ///
+					 sqrt(${var_`N'})*invnorm(uniform())
+		}
+		forvalues N = 7 / 9 { // measurements y7, y8, and y9 are constants
+		
+		gen y`N'`t' = y`N'`j'
+		}
+		*drop fac1`j' fac2`j' fac3`j'
+		local t = `t' + 1
 }
 
-gen eQ1 = sqrt(1.0)*invnorm(uniform())
-gen Q1 = 1.0*x1 + 1.0*x2 + 1.0*f18 + eQ1
-
-keep caseid f1* f2* f3* y1* y2* y3* y4* y5* y6* y7* y8* y9* Q1 x1 x2 
+keep caseid fac1* fac2* fac3* y1* y2* y3* y4* y5* y6* y7* y8* y9* x1 x2 
 reshape long y1 y2 y3 y4 y5 y6 y7 y8 y9, i(caseid) j(period)
+save `"${PATH_OUT_DATA}/data_gen"', replace
 
-gen dy1 = 1
-gen dy2 = 1
-gen dy3 = 1
-gen dy4 = 1
-gen dy5 = 1
-gen dy6 = 1
-gen dy7 = 1
-gen dy8 = 1
-gen dy9 = 1
-gen dQ1 = 1
-
-order caseid period y1 y2 y3 y4 y5 y6 y7 y8 y9 Q1 dy1 dy2 dy3 dy4 dy5 dy6 dy7 dy8 dy9 dQ1 x1 x2
-sort caseid period
-save data, replace
 
 *outfile using data.raw, w replace
+
+exit
