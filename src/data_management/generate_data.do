@@ -1,5 +1,10 @@
 /*
-Needs some explanation.
+In this file "generate_data.do", the source data as well as the control 
+variables are simulated. Three .json files provides the parameters for variables. 
+As for the parameters, we make use of the definition of transition and 
+measurement equations from CHS replication files. 
+
+The simulated data is saved as "data_gen.dta" to the bld/out/data path.
 */
 
 
@@ -45,24 +50,31 @@ local t = 2
 	
 	
 
-forvalues N = 1 / 6 {
+	forvalues N = 1 / 6 {
 	
 		gen y`N'`t'  = ${beta1_`N'}*x1 + ${beta2_`N'}*x2 + ${z_`N'}*${factor_`N'}`t' + ///
 					 sqrt(${var_`N'})*invnorm(uniform())
-		}
+	}
 		forvalues N = 7 / 9 { // measurements y7, y8, and y9 are constants
 		
 		gen y`N'`t' = y`N'`j'
 		}
-		*drop fac1`j' fac2`j' fac3`j'
 		local t = `t' + 1
 }
 
-keep caseid fac1* fac2* fac3* y1* y2* y3* y4* y5* y6* y7* y8* y9* x1 x2 
-reshape long y1 y2 y3 y4 y5 y6 y7 y8 y9, i(caseid) j(period)
+keep caseid fac1* fac2* fac38 y1* y2* y3* y4* y5* y6* y78 y88 y98 x1 x2 // repeated values of fac3, y7 and y8 dropped
+order caseid fac1* fac2* fac38 y1* y2* y3* y4* y5* y6* y78 y88 y98 x1 x2 
 save `"${PATH_OUT_DATA}/data_gen"', replace
 
 
-*outfile using data.raw, w replace
 
 exit
+
+
+
+
+
+
+
+
+
