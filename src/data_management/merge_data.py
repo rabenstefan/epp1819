@@ -1,4 +1,11 @@
-"""Merge tables generated from simulated data.
+"""In the file "merge_data.py", tables generated from simulated data are merged. 
+The table 'case' matches each period and caseid with factor numbers 
+via factorid's in factor table. Table 'control' matches caseid with control 
+variables. We merge this two tables on caseid and name case_controls. 
+
+Then, we merge 'case_controls' with 'factor' table via the fac1, fac2, and fac3
+columns of case_controls consequetively. The final dataset is saved as 
+data_all.csv.
 
 """
 import numpy as np
@@ -28,8 +35,8 @@ for f in range(len(f_nr)):
         left_on='factor_id', right_on=f_nr[f]
     )
     
-data = df[0].append([df[1], df[2]]).set_index(['case_id', 't'])
-data_all = data.to_csv(ppj("OUT_DATA", "data_all.csv"), sep=",")
+data = df[0].append([df[1], df[2]]).set_index(['caseid', 't'])
+data_all = data.to_csv(ppj("OUT_DATA", 'data_all.csv'), sep=",")
 
 
 
