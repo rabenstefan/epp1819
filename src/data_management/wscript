@@ -12,7 +12,7 @@ def build(ctx):
         source='generate_data.do',
         target=[
             ctx.path_to(ctx, 'OUT_DATA', 'log', 'generate_data.log'),
-            ctx.path_to(ctx, 'OUT_DATA', 'source_data', 'data_gen.dta'),
+            ctx.path_to(ctx, 'OUT_DATA', 'source_data', 'data_gen.dta')
         ]
     )
 
