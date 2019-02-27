@@ -25,7 +25,7 @@ include project_paths
 log using `"${PATH_OUT_DATA}/log/`1'.log"', replace
 
 
-use `"${PATH_OUT_DATA}/data_gen"'
+use `"${PATH_OUT_DATA}/source_data/data_gen"'
 
 reshape long y1 y2 y3 y4 y5 y6 fac1 fac2 fac3, i(caseid) j(t)
 
@@ -58,7 +58,7 @@ forvalues i = 1 / 3{
 keep factor_id meas1 meas2 meas3 true_fac 
 order factor_id meas1 meas2 meas3 true_fac 
 
-save `"${PATH_OUT_DATA}/data_table_1"', replace
+save `"${PATH_OUT_DATA}/tables/data_table_1"', replace
 restore
 
 preserve //generation of data_table_2
@@ -70,13 +70,13 @@ gen fac1 = caseid + "1" + t
 gen fac2 = caseid + "2" + t
 gen fac3 = caseid + "3" + "8"
 destring fac1 fac2 fac3 caseid t, replace
-save `"${PATH_OUT_DATA}/data_table_2"', replace
+save `"${PATH_OUT_DATA}/tables/data_table_2"', replace
 restore
 
 preserve
 keep if t==8
 keep caseid x1 x2
-save `"${PATH_OUT_DATA}/data_table_3"', replace
+save `"${PATH_OUT_DATA}/tables/data_table_3"', replace
 restore
 
 exit

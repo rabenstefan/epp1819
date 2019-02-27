@@ -64,7 +64,7 @@ local t = 2
 
 keep caseid fac1* fac2* fac38 y1* y2* y3* y4* y5* y6* y78 y88 y98 x1 x2 // repeated values of fac3, y7 and y8 dropped
 order caseid fac1* fac2* fac38 y1* y2* y3* y4* y5* y6* y78 y88 y98 x1 x2 
-save `"${PATH_OUT_DATA}/data_gen"', replace
+save `"${PATH_OUT_DATA}/source_data/data_gen"', replace
 
 
 
