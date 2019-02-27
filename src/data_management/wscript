@@ -37,7 +37,7 @@ def build(ctx):
 	     out_data('tables', 'data_table_3.dta')
 	],
 	target=[
-            ctx.path_to(ctx, 'OUT_DATA', 'data_all.dta')
+            ctx.path_to(ctx, 'OUT_DATA', 'data_all.csv')
 	],
 	name='merge_data'
     )
