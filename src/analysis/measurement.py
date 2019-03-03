@@ -41,26 +41,19 @@ class Measurement:
                 measurement equation.
         """
         
-        self.meas_res = data
+        self.meas_res = []
         #Generate residuals of measurements given controls.
-        controls = np.array(data['control', 'control_2'])
+        controls = np.array(data.loc[:,['control', 'control_2']])
         for i, param_dic in enumerate(parameters):
-            eq_nr = i+1
+            eq_nr = str(i+1)
             betas = np.array([param_dic['beta1'], param_dic['beta2']])
             meas = np.array(data['meas'+eq_nr])
             resid = meas - np.matmul(controls, betas)
-            self.meas_res.append(
-                                    pd.DataFrame(
+            self.meas_res.append(pd.DataFrame(
                                                     data = resid,
-                                                    columns = 'res'+eq_nr
-                                                ),
-                                    ignore_index = True
-                                )
-        self.meas_res.drop(
-                        ['control', 'control_2', 'meas1', 'meas2', 'meas3'],
-                        axis = 1,
-                        inplace = True
-                     )
+                                                    index = data.index,
+                                                    columns = ['res'+eq_nr]
+                                                ))
         
         #Store coefficients and variances in lists.
         self.fac_coff = []
