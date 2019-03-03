@@ -6,9 +6,6 @@
 
 def build(ctx):
 
-    def out_data(*args):
-        return ctx.path_to(ctx, 'OUT_DATA', *args)
-
     def out_models(*args):
         return ctx.path_to(ctx, 'OUT_MODEL_SPECS', *args)
 
@@ -17,11 +14,13 @@ def build(ctx):
 
     ctx(
         features='run_py_script',
-        source='particle_smoother.py',
+        source='samples_from_prior.py',
         target=[
-            out_analysis('log', 'particle_smoother.log')
+	    out_analysis('samples_from_prior.pickle'),
         ],
-        deps=[out_data('data_all.csv')]
+	deps=[
+	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'true_prior.json')
+        ]
     )
 
    

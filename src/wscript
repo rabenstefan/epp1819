@@ -10,7 +10,7 @@ def build(ctx):
     # point generally run very fast.
     ctx.add_group()
     ctx.recurse('data_management')
-    # ctx.recurse('analysis')
+    ctx.recurse('analysis')
     # ctx.recurse('final')
     # Safety measure -- else the LaTeX scanner might fail because some
     # '.tex'-source file has not been generated.
