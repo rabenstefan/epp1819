@@ -69,13 +69,24 @@ tostring caseid t, replace
 gen fac1 = caseid + "1" + t
 gen fac2 = caseid + "2" + t
 gen fac3 = caseid + "3" + "8"
-destring fac1 fac2 fac3 caseid t, replace
+gen x1 = caseid + "1"
+gen x2 = caseid + "2"
+destring fac1 fac2 fac3 caseid t x1 x2, replace
 save `"${PATH_OUT_DATA}/tables/data_table_2"', replace
 restore
 
 preserve
-keep if t==8
+gen N= _n
+keep if mod(N, 8)==1
 keep caseid x1 x2
+reshape long x, i(caseid) j(control)
+tostring caseid control, replace
+gen cont_id = caseid + control
+destring cont_id, replace
+
+keep cont_id x
+rename x control
+order cont_id control
 save `"${PATH_OUT_DATA}/tables/data_table_3"', replace
 restore
 
