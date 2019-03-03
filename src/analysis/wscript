@@ -14,6 +14,21 @@ def build(ctx):
 
     def out_analysis(*args):
         return ctx.path_to(ctx, 'OUT_ANALYSIS', *args)
+    
+    ctx(
+        features = 'run_py_script',
+        source = 'prepare_data.py',
+        target = [
+                    out_analysis('meas_fac1.pkl'),
+                    out_analysis('meas_fac2.pkl'),
+                    out_analysis('meas_fac3.pkl')
+                 ]
+        #deps=[
+        #         out_data('tables','data_table_1.dta'),
+        #         out_data('tables','data_table_2.dta'),
+       #          out_data('tables','data_table_3.dta')
+        #    ]
+    )
 
     ctx(
         features='run_py_script',
@@ -21,7 +36,11 @@ def build(ctx):
         target=[
             out_analysis('log', 'particle_smoother.log')
         ],
-        deps=[out_data('data_all.csv')]
+        deps = [
+                    out_analysis('meas_fac1.pkl'),
+                    out_analysis('meas_fac2.pkl'),
+                    out_analysis('meas_fac3.pkl')
+               ]
     )
 
    
