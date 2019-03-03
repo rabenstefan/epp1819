@@ -11,6 +11,21 @@ def build(ctx):
 
     def out_analysis(*args):
         return ctx.path_to(ctx, 'OUT_ANALYSIS', *args)
+    
+    ctx(
+        features = 'run_py_script',
+        source = 'prepare_data.py',
+        target = [
+                    out_analysis('meas_fac1.pkl'),
+                    out_analysis('meas_fac2.pkl'),
+                    out_analysis('meas_fac3.pkl')
+                 ]
+        #deps=[
+        #         out_data('tables','data_table_1.dta'),
+        #         out_data('tables','data_table_2.dta'),
+       #          out_data('tables','data_table_3.dta')
+        #    ]
+    )
 
     ctx(
         features='run_py_script',
@@ -21,6 +36,16 @@ def build(ctx):
 	deps=[
 	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'true_prior.json')
         ]
+)
+ctx(
+	features='run_py_script',
+	source='particle_smoother.py',
+        deps = [
+                    out_analysis('meas_fac1.pkl'),
+                    out_analysis('meas_fac2.pkl'),
+                    out_analysis('meas_fac3.pkl'),
+		out_models('measurements.json')
+               ]
     )
 
    
