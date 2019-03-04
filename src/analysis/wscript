@@ -36,15 +36,16 @@ def build(ctx):
 	deps=[
 	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'true_prior.json')
         ]
-)
-ctx(
+    )
+
+    ctx(
 	features='run_py_script',
 	source='particle_smoother.py',
         deps = [
                     out_analysis('meas_fac1.pkl'),
                     out_analysis('meas_fac2.pkl'),
                     out_analysis('meas_fac3.pkl'),
-		out_models('measurements.json')
+		    out_models('measurements.json')
                ]
     )
 

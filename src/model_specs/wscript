@@ -29,6 +29,7 @@ def convert_model_json_to_stata(task):
 
     Require the JSON file to contain a single, non-nested, dictionary.
 
+    The smoother.json file has a different structure than the other ones    
     Simply write its entries as Stata globals to the target file.
 
     """
@@ -51,8 +52,7 @@ def convert_json_to_stata(task):
     """Convert the geography model specification in ``source[0]`` to
     a Stata do-file.
 
-    The geography.json file has a different structure than the other ones,
-    we get numbers from the order of the list of dictionaries.
+    We get numbers from the order of the list of dictionaries.
 
     """
 
@@ -76,8 +76,18 @@ def convert_json_to_stata(task):
 def build(ctx):
 
     for node in ctx.path.ant_glob("*.json"):
+        if node.name == 'smoother.json':
+            ctx(
+                rule=convert_model_json_to_stata,
+                source=node,
+                target=node.change_ext('.do'),
+            )
+        else:
             ctx(
                 rule=convert_json_to_stata,
                 source=node,
                 target=node.change_ext('.do'),
             )
+
+
+

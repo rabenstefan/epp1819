@@ -1,0 +1,6 @@
+{
+    "rnd_seed": 12345,
+    "n_particles": 100,
+    "period": 8,
+    "obs": 4000 
+}
