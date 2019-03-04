@@ -6,7 +6,6 @@ Analysis.
 import numpy as np
 import pandas as pd
 import json
-import pickle
 
 import sys, os
 os.getcwd()
@@ -32,6 +31,10 @@ if __name__ == "__main__":
         for param_dic in meas_params:
             if fac == param_dic['factor']:
                 params.append(param_dic)
-        meas_objs.append(Measurement(params, data))    
-    
+        meas_objs.append(Measurement(params, data))
+    test_facs = pd.DataFrame(
+                                data = np.ones((4000,100)),
+                                columns = ['fac'+str(i+1) for i in range(100)]
+                            )
+    probs = meas_objs[0].marginal_probability(test_facs, 1)
 
