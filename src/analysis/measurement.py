@@ -67,7 +67,7 @@ class Measurement:
             self.fac_coeff.append(param_dic['z'])
             self.variances.append(param_dic['var'])
     
-    def _density(x, var):
+    def _density(self, x, var):
         """Return value of density evaluated at x.
         
         Args:
@@ -97,11 +97,11 @@ class Measurement:
         """
         
         nr_obs, nr_facs = factors.shape
-        marginals = np.ones(nr_obs, nr_facs)
+        marginals = np.ones((nr_obs, nr_facs))
         # Calculate densities for each measurement equation.
         for i, var in enumerate(self.variances):
             meas = self.meas_res[i].xs(period, level = 1)
-            if (meas.empty) or (nr_facs != meas.shape[0]):
+            if (meas.empty) or (nr_obs != meas.shape[0]):
                 raise MeasurementDimensionError
             x = (
                     np.repeat(meas.values, nr_facs, axis = 1)
