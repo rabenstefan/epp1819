@@ -54,12 +54,16 @@ scalar T = ${period}
 	while `t' <= T { 
 	local j = `t'-1 
 
-	gen fac1`t' = (${lambda_1}/${phi_1})*log(${gamma1_1}*exp(${phi_1}* ///
-				   ${lambda_1}*fac1`j') + ${gamma2_1}*exp(${phi_1}*fac2`j') + ///
+	forvalues F = 1 / 2 {
+		
+		*generate fac1 and fac2 for each period.
+		gen fac`F'`t' = (${lambda_`F'}/${phi_`F'})*log(${gamma1_`F'}*exp(${phi_`F'}* ///
+				   ${lambda_`F'}*fac1`j') + ${gamma2_`F'}*exp(${phi_`F'}*fac2`j') + ///
 				   ${gamma3_1}*exp(${phi_1}*fac3`j')) + ///
-				   ${var_u_1}*invnorm(uniform()) 
-	gen fac2`t' = ${gamma2_2}*fac2`j' + ${var_u_2}*invnorm(uniform())   
-	gen fac3`t'= fac3`j'
+				   ${var_u_`F'}*invnorm(uniform()) 
+		}
+	
+		gen fac3`t'= fac3`j'
 	
 	
 
