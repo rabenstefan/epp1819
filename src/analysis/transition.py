@@ -1,7 +1,8 @@
-"""Transition class: provide transition equations and -probabilities."""
+"""Transition class: provide transition equations and -probabilities.
+TransitionFactorSettingError class: exception for wrong inputs.
+"""
 
 import numpy as np
-import pandas as pd
 
 class Transition:
     """
@@ -45,11 +46,11 @@ class Transition:
             + *nr* (integer): Factor number to which transition equation
                 belongs (**starts at 0**).
             + *factors* (np.ndarray): Array of arbitrary shape, but with
-                **last dimension of length 3** (is taken as the three inputs).
+                **first dimension of length 3** (is taken as the three inputs).
         
         Returns:
             + expected next state of factor type *nr* (np.ndarray): Array with
-                same shape as *factors*, but last dimension is 'flat'
+                same shape as *factors*, but first dimension is 'flat'
         """
         
         # Define CES-function with parameters from factor type *nr*.
@@ -74,28 +75,30 @@ class Transition:
                                                 self.params[nr]['phi']*
                                                 self.params[nr]['lambda']
                                             )
-        return ces(factors[..., 0], factors[..., 1], factors[..., 2])
+        return ces(factors[0, ...], factors[1, ...], factors[2, ...])
         
     def next_state(self, state, errors):
         """Calculate next state of all factors, given last state and errors.
         
         Args:
-            + *state* (pd.DataFrame): Array of arbitrary shape, but with
-                **last dimension of length 3** (is taken as the three factor
+            + *state* (np.ndarray): Array of arbitrary shape, but with
+                **first dimension of length 3** (is taken as the three factor
                 types). Contains state for one period over all observations and
                 particles.
-            + *errors* (pd.DataFrame): Array of **same shape as *state* **, but
-                last dimension only as long as number of non-constant factors.
+            + *errors* (np.ndarray): Array of **same shape as *state* **, but
+                first dimension only as long as number of non-constant factors.
                 Contains additive errors to transition equations. They are
-                attributed to factor types along last dimension, sorted from
+                attributed to factor types along first dimension, sorted from
                 first non-constant to last non-constant factor type.
         
         Returns:
-            + next state of factors (pd.DataFrame): Has same shape, indices and
-                columns as *state*.
+            + next state of factors (np.ndarray): Has same shape as *state*.
         """
-        
-        if sum(self.factor_setting) != errors.shape[-1]:
+    
+        if (
+                sum(self.factor_setting) != errors.shape[0] or
+                len(self.factor_setting) != state.shape[0]
+            ):
             raise TransitionFactorSettingError
             
         next_state = np.zeros(state.shape)
@@ -103,21 +106,17 @@ class Transition:
         for nr, trans in enumerate(self.factor_setting):
             # Take same values if factor type is constant.
             if 0 == trans:
-                next_state[...,nr] = state.values[..., nr]
+                next_state[nr, ...] = state[nr, ...]
             else:
-                next_state[...,nr] = (
+                next_state[nr, ...] = (
                                         self._transition_equation(
                                                                    nr, 
-                                                                   state.values
+                                                                   state
                                                                  )
-                                        + errors.values[..., sum_trans]
+                                        + errors[sum_trans, ...]
                                      )
-                sum_trans++
-        return pd.DataFrame(
-                                data = next_state,
-                                index = state.index,
-                                columns = state.columns
-                            )
+                sum_trans += 1
+        return next_state
         
 class TransitionFactorSettingError(Exception):
     

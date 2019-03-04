@@ -14,9 +14,20 @@ from project_paths import project_paths_join as ppj
 
 #from bld.project_paths import project_paths_join as ppj
 from measurement import Measurement
+from transition import Transition
 
 
 if __name__ == "__main__":
+    trans_params = json.load(
+                             open(
+                                     ppj("IN_MODEL_SPECS", "transitions.json"),
+                                     encoding = "utf-8"
+                                 )
+                            )
+    trans_obj = Transition(trans_params, [1, 1, 0])
+    test_state = np.array([[[1, 7],[2, 5]],[[3, 8],[1, 3]],[[5, 9],[4, 2]]])
+    test_errors = np.array([[[.5, .3],[-.1, .8]],[[-.3, -.2],[.1, -.5]]])
+    test_next = trans_obj.next_state(test_state, test_errors)
     meas_params = json.load(
                              open(
                                     ppj("IN_MODEL_SPECS", "measurements.json"),
