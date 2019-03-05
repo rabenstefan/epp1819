@@ -29,14 +29,16 @@ def build(ctx):
 
     ctx(
         features='run_py_script',
-        source='model_sterr_cov.py',
+        source='initial_draws.py',
         target=[
-	    out_analysis('samples_from_prior.pickle'),
+	    out_analysis('prior_samples.pickle'),
+	    out_analysis('transition_errors.pickle')
         ],
 	deps=[
 	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'true_prior.json'),
-	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'smoother.json')
-        ]
+	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'smoother.json'),
+	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'transitions.json')
+	]
     )
 
     ctx(
