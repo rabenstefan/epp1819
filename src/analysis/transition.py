@@ -1,5 +1,6 @@
 """Transition class: provide transition equations and -probabilities.
-TransitionFactorSettingError class: exception for wrong inputs.
+TransitionFactorSettingError class: exception for unfit factor settings.
+TransitionFactorValuesError class: exception for wrong factor values.
 """
 
 import numpy as np
@@ -100,6 +101,8 @@ class Transition:
                 len(self.factor_setting) != state.shape[0]
             ):
             raise TransitionFactorSettingError
+        if np.amin(state) <= 0:
+            raise TransitionFactorValuesError
             
         next_state = np.zeros(state.shape)
         sum_trans = 0
@@ -122,3 +125,8 @@ class TransitionFactorSettingError(Exception):
     
     def __str__(self):
         return "Input does not fit to number of non-constant factor types."
+
+class TransitionFactorValuesError(Exception):
+    
+    def __str__(self):
+        return "Input contains non-positive factor values."
