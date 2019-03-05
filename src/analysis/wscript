@@ -15,13 +15,20 @@ def build(ctx):
     def out_analysis(*args):
         return ctx.path_to(ctx, 'OUT_ANALYSIS', *args)
 
-    abspath = os.path.join(ctx.path.abspath(), 'test_transition.py')
+    def abspath_test(arg):
+        return os.path.join(ctx.path.abspath(), arg)
 
     ctx(
-        features='run_py_script',
-        source='test_transition.py',
-        deps='transition.py',
-        append=abspath
+        features = 'run_py_script',
+        source = 'test_transition.py',
+        deps = 'transition.py',
+        append = abspath_test('test_transition.py')
+    )
+    ctx(
+        features = 'run_py_script',
+        source = 'test_measurement.py',
+        deps = 'measurement.py',
+        append = abspath_test('test_measurement.py')
     )
     ctx.add_group()
     
