@@ -38,6 +38,7 @@ class Transition:
         """
         
         self.params = parameters
+        self.sds = [np.sqrt(p['var_u']) for p in parameters]
         self.factor_setting = factor_setting
         
     def _transition_equation(self, nr, factors):
@@ -79,7 +80,8 @@ class Transition:
         return ces(factors[0, ...], factors[1, ...], factors[2, ...])
         
     def next_state(self, state, errors):
-        """Calculate next state of all factors, given last state and errors.
+        """Calculate next state of all factors, given last state and normalized
+        errors.
         
         Args:
             + *state* (np.ndarray): Array of arbitrary shape, but with
@@ -88,9 +90,9 @@ class Transition:
                 particles.
             + *errors* (np.ndarray): Array of **same shape as *state* **, but
                 first dimension only as long as number of non-constant factors.
-                Contains additive errors to transition equations. They are
-                attributed to factor types along first dimension, sorted from
-                first non-constant to last non-constant factor type.
+                Contains additive, normalized errors to transition equations.
+                They are attributed to factor types along first dimension, 
+                sorted from first to last non-constant factor type.
         
         Returns:
             + next state of factors (np.ndarray): Has same shape as *state*.
@@ -116,7 +118,7 @@ class Transition:
                                                                    nr, 
                                                                    state
                                                                  )
-                                        + errors[sum_trans, ...]
+                                        + self.sds[nr]*errors[sum_trans, ...]
                                      )
                 sum_trans += 1
         return next_state
