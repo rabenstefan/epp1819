@@ -43,9 +43,15 @@ if __name__ == "__main__":
             if fac == param_dic['factor']:
                 params.append(param_dic)
         meas_objs.append(Measurement(params, data))
-    test_facs = pd.DataFrame(
-                                data = np.ones((4000,100)),
-                                columns = ['fac'+str(i+1) for i in range(100)]
-                            )
-    probs = meas_objs[0].marginal_probability(test_facs, 1)
-
+    probs = []
+    test_facs = np.ones((3,4000,100))
+    test_facs[..., :] = np.array(list(range(1, 101)))/100
+    for i, fac in enumerate(f_nr):
+        test_facs_df = pd.DataFrame(test_facs[i,...])
+        # Take logs of probabilities to take product more easily.
+        probs.append(np.log(meas_objs[i].marginal_probability(test_facs_df,1)))
+    particle_probs = np.exp(sum(probs).values)
+    weights = (
+                particle_probs / 
+                np.tile(np.sum(particle_probs, axis = 1), (100, 1)).T
+              )
