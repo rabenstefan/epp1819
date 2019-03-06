@@ -13,7 +13,13 @@ def build(ctx):
         target=[
             ctx.path_to(ctx, 'OUT_DATA', 'log', 'generate_data.log'),
             ctx.path_to(ctx, 'OUT_DATA', 'source_data', 'data_gen.dta')
-        ]
+        ],
+	deps=[
+	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'smoother.json'),
+	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'transitions.json'),
+	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'true_prior.json'),
+	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'measurements.json')
+	     ]
     )
 
     ctx(
@@ -28,7 +34,8 @@ def build(ctx):
 	deps=[out_data('source_data', 'data_gen.dta')]
     )
  
-    
+   
+
 
 
 

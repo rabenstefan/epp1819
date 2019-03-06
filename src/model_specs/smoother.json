@@ -1,0 +1,8 @@
+{
+    "rnd_seed": 12345,
+    "n_particles": 2500,
+    "draws_constant": 50,
+    "draws_varying": 50,
+    "period": 8,
+    "obs": 4000
+}

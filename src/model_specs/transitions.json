@@ -8,11 +8,11 @@
         "var_u" : 0.1
     },
     {
-	"phi": 1,
-	"lambda": 1,
-	"gamma1": 0,
+    	"phi": 1,
+    	"lambda": 1,
+    	"gamma1": 0,
         "gamma2": 0.6,
-	"gamma3": 0,
+    	"gamma3": 0,
         "var_u" : 0.1
     }
 ]

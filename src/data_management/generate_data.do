@@ -1,10 +1,20 @@
 /*
 In this file "generate_data.do", the source data as well as the control 
-variables are simulated. Three .json files provides the parameters for variables. 
-As for the parameters, we make use of the definition of transition and 
-measurement equations from CHS replication files. 
+variables are simulated. 
 
-The simulated data is saved as "data_gen.dta" to the bld/out/data path.
+ The file requires to be called with a model specification as the argument,
+a corresponding do-file must exist in ${PATH_OUT_MODEL_SPECS}. That file needs
+to define globals:
+    
+    * ${obs} - number of bservations in the sample
+    * ${rnd_seed} - random seed set for the random number generation
+    * ${period} - number of periods factors and measurements are observed
+	
+Four .json files in ${PATH_IN_MODEL_SPECS} provide the parameters for variables. 
+The definition of transition and measurement equations are drawn from the CHS 
+replication files.
+
+The simulated data is stored as "data_gen.dta" in ${PATH_OUT_DATA}.
 */
 
 
@@ -19,10 +29,12 @@ log using `"${PATH_OUT_DATA}/log/`1'.log"', replace
 do `"${PATH_OUT_MODEL_SPECS}/measurements"'
 do `"${PATH_OUT_MODEL_SPECS}/transitions"'
 do `"${PATH_OUT_MODEL_SPECS}/true_prior"'
+do `"${PATH_OUT_MODEL_SPECS}/smoother"'
 
-set obs 4000
+set obs ${obs}
+set seed ${rnd_seed}
 gen caseid = _n
-set seed 12345
+
 
 gen x1 = uniform()
 gen x2 = 1
@@ -38,31 +50,38 @@ forvalues N = 1 / 9 {
 }
 
 local t = 2
-	while `t' < 9 {
-	local j = `t'-1
+scalar T = ${period}
+	while `t' <= T { 
+	local j = `t'-1 
 
-	gen fac1`t' = (${lambda_1}/${phi_1})*log(${gamma1_1}*exp(${phi_1}* ///
-				   ${lambda_1}*fac1`j') + ${gamma2_1}*exp(${phi_1}*fac2`j') +  ///
-				   ${gamma3_1}*exp(${phi_1}*fac3`j')) + ///
-				   ${var_u_1}*invnorm(uniform()) 
-	gen fac2`t' = ${gamma2_2}*fac2`j' + ${var_u_2}*invnorm(uniform())   
-	gen fac3`t'= fac3`j'
-	
-	
-
-	forvalues N = 1 / 6 {
-	
-		gen y`N'`t'  = ${beta1_`N'}*x1 + ${beta2_`N'}*x2 + ${z_`N'}*${factor_`N'}`t' + ///
-					 sqrt(${var_`N'})*invnorm(uniform())
-	}
-		forvalues N = 7 / 9 { // measurements y7, y8, and y9 are constants
+	forvalues F = 1 / 2 {
 		
-		gen y`N'`t' = y`N'`j'
+		*generate fac1 and fac2 for each period.
+		gen fac`F'`t' = (${lambda_`F'}/${phi_`F'})*log(${gamma1_`F'}*exp(${phi_`F'}* ///
+				   ${lambda_`F'}*fac1`j') + ${gamma2_`F'}*exp(${phi_`F'}*fac2`j') + ///
+				   ${gamma3_1}*exp(${phi_1}*fac3`j')) + ///
+				   ${var_u_`F'}*invnorm(uniform()) 
 		}
-		local t = `t' + 1
-}
+	
+		gen fac3`t'= fac3`j'
+	
+	
 
-keep caseid fac1* fac2* fac38 y1* y2* y3* y4* y5* y6* y78 y88 y98 x1 x2 // repeated values of fac3, y7 and y8 dropped
+	forvalues N = 1 / 6 { 
+	
+		gen y`N'`t'  = ${beta1_`N'}*x1 + ${beta2_`N'}*x2 + 			/// 
+						${z_`N'}*${factor_`N'}`t' +				 	///
+						sqrt(${var_`N'})*invnorm(uniform())
+	} 
+		forvalues N = 7 / 9 {  // measurements y7, y8, and y9 are constants
+		
+		gen y`N'`t' = y`N'`j' 
+		} 
+		local t = `t' + 1 
+} 
+
+*drop the repeated values of fac3, y7 and y8
+keep caseid fac1* fac2* fac38 y1* y2* y3* y4* y5* y6* y78 y88 y98 x1 x2 
 order caseid fac1* fac2* fac38 y1* y2* y3* y4* y5* y6* y78 y88 y98 x1 x2 
 save `"${PATH_OUT_DATA}/source_data/data_gen"', replace
 
