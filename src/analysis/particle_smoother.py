@@ -114,7 +114,8 @@ def particle_smoother():
     # History of resampled particles over periods.
     history = []
     # Load prior and transition errors.
-    prior = np.load(ppj("OUT_ANALYSIS", "prior_samples.pickle"))
+    #prior = np.load(ppj("OUT_ANALYSIS", "prior_samples.pickle"))
+    prior = np.load(ppj("OUT_ANALYSIS", "true_degenerated_prior.pickle"))
     trans_errors = np.load(ppj("OUT_ANALYSIS", "transition_errors.pickle"))
     # Auxiliary function for sampling.
     sampling = lambda distr : multinomial(params["n_particles"], distr)
@@ -167,4 +168,4 @@ def particle_smoother():
     
 if __name__ == "__main__":
     factors = particle_smoother()
-    factors.to_csv(ppj("OUT_ANALYSIS", "factor_estimates.csv"))
+    factors.to_pickle(ppj("OUT_ANALYSIS", "factor_estimates.pkl"))
