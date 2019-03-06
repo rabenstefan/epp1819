@@ -69,9 +69,7 @@ def _find_most_probable_part(weights, parts):
     
     
     
-    
-    
-if __name__ == "__main__":
+def particle_smoother():
     params = json.load(
                         open(
                                 ppj("IN_MODEL_SPECS", "smoother.json"),
@@ -85,7 +83,10 @@ if __name__ == "__main__":
                                     encoding="utf-8"
                                  )
                             )
+    # Set up the factors and their type (non-constant or constant).
     f_nr = ['fac1', 'fac2', 'fac3']
+    f_setting = [1, 1, 0]
+    # Load in the measurement data.
     meas_objs = []
     for fac in f_nr:
         data = pd.read_pickle(ppj("OUT_ANALYSIS", 'meas_'+fac+'.pkl'))
@@ -94,13 +95,14 @@ if __name__ == "__main__":
             if fac == param_dic['factor']:
                 params_list.append(param_dic)
         meas_objs.append(Measurement(params_list, data))
+    # Set up transition equations.
     trans_params = json.load(
                              open(
                                      ppj("IN_MODEL_SPECS", "transitions.json"),
                                      encoding = "utf-8"
                                  )
                             )
-    trans_obj = Transition(trans_params, [1, 1, 0])
+    trans_obj = Transition(trans_params, f_setting)
     # History of resampled particles over periods.
     history = []
     # Load prior and transition errors.
@@ -108,26 +110,35 @@ if __name__ == "__main__":
     trans_errors = np.load(ppj("OUT_ANALYSIS", "transition_errors.pickle"))
     # Auxiliary function for sampling.
     sampling = lambda distr : multinomial(params["n_particles"], distr)
-    f_nr_list = [f_nr[0:2] for i in range(params["period"])]
-    f_nr_list[0] = f_nr
     
+    # Forward iteration of particle smoother.
+    # ========================================
     history.append(prior)
     for per in range(params["period"]):
         next_state = trans_obj.next_state(
                                             history[per],
                                             trans_errors[:,:,per,:]
-                                        )
-        probs = []
-        for i, fac in enumerate(f_nr_list[per]):
-            state_df = pd.DataFrame(next_state[i, ...])
+                                         )
+        probs = np.zeros((params["obs"], params["n_particles"]))
+        fac_to_consider = np.nonzero((np.array(f_setting)-.1)*per >= 0)[0]
+        for i in fac_to_consider:
             # Take logs of probabilities to calculate product more easily.
-            probs.append(np.log(meas_objs[i].marginal_probability(state_df,per+1)))
-        particle_probs = np.exp(sum(probs).values)
+            probs += np.log(meas_objs[i].marginal_probability(
+                                                            next_state[i, ...],
+                                                            per+1)
+                                                             )
+        particle_probs = np.exp(probs)
         weights = (
                     particle_probs / 
-                    np.tile(np.sum(particle_probs, axis = 1), (params["n_particles"], 1)).T
+                    np.tile(
+                             np.sum(particle_probs, axis = 1),
+                             (params["n_particles"], 1)
+                            ).T
                   )
         samples = np.apply_along_axis(sampling, 1, weights)
         # Construct drawn particles and save them in new array.
         history.append(_construct_new_particles(samples, next_state))
+    
+if __name__ == "__main__":
+    particle_smoother()
         
