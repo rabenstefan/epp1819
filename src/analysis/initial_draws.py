@@ -23,7 +23,8 @@ Tesulted arrays are stored as pickle files in "OUT_ANALYSIS" directory.
 import numpy as np
 import json
 import pickle
-
+import math
+import hickle
 
 from bld.project_paths import project_paths_join as ppj
 
@@ -66,17 +67,17 @@ def prior_samples(cov_12, prior, fixed):
     """
     mean = [0, 0]
     var3=prior[2]["var_p"]
-    prior_sample=np.empty([(fixed["n_particles"])**2, 3, fixed["obs"]])
-    total = np.zeros((10000,3))
+    prior_sample=np.empty([3, fixed["obs"], (fixed["n_particles"])])
+    total = np.zeros(((fixed["n_particles"]), 3))
     for i in range(0, (fixed["obs"]+1)):
         
         f12_0 = np.random.multivariate_normal(
-                                             mean, cov_12, fixed["n_particles"]
+                                             mean,cov_12,fixed["draws_varying"]
                                              ) 
-        f3_0  = np.random.normal(0, var3, fixed["n_particles"]) 
+        f3_0  = np.random.normal(0, var3, fixed["draws_constant"]) 
         total[:, 0:2] = np.array(f12_0.repeat(len(f3_0), axis=0))
         total[:, 2] = np.array(np.tile(f3_0, len(f12_0)))
-        prior_sample[:, :, i:(i+1)]= np.expand_dims(total, axis=2)
+        prior_sample[:, i:(i+1), :]= np.expand_dims(total.T, axis=1)
     
     return prior_sample
     

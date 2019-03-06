@@ -12,6 +12,9 @@ def build(ctx):
     def out_analysis(*args):
         return ctx.path_to(ctx, 'OUT_ANALYSIS', *args)
 
+    def out_data(*args):
+        return ctx.path_to(ctx, 'OUT_DATA', *args)
+
     def abspath_test(arg):
         return os.path.join(ctx.path.abspath(), arg)
 
@@ -36,12 +39,12 @@ def build(ctx):
                     out_analysis('meas_fac1.pkl'),
                     out_analysis('meas_fac2.pkl'),
                     out_analysis('meas_fac3.pkl')
-                 ]
-        #deps=[
-        #         out_data('tables','data_table_1.dta'),
-        #         out_data('tables','data_table_2.dta'),
-       #          out_data('tables','data_table_3.dta')
-        #    ]
+                 ],
+        deps=[
+                  out_data('tables','data_table_1.dta'),
+                  out_data('tables','data_table_2.dta'),
+                  out_data('tables','data_table_3.dta')
+           ]
     )
 
     ctx(
@@ -65,7 +68,11 @@ def build(ctx):
                     out_analysis('meas_fac1.pkl'),
                     out_analysis('meas_fac2.pkl'),
                     out_analysis('meas_fac3.pkl'),
-		    out_models('measurements.json')
+                    out_analysis('prior_samples.pickle'),
+                    out_analysis('transition_errors.pickle'),
+		            out_models('measurements.json'),
+                    out_models('smoother.json'),
+                    out_models('transitions.json')
                ]
     )
     
