@@ -23,8 +23,7 @@ Tesulted arrays are stored as pickle files in "OUT_ANALYSIS" directory.
 import numpy as np
 import json
 import pickle
-import math
-import hickle
+import pandas as pd
 
 from bld.project_paths import project_paths_join as ppj
 
@@ -81,7 +80,13 @@ def prior_samples(cov_12, prior, fixed):
     
     return prior_sample
     
-
+def _true_prior_samples(true_facs):
+    """ Take true factors of period 1 as prior samples.
+    
+    """
+    true_per_1 = true_facs.loc[(slice(None), 1), :]
+    
+    return true_prior
 
 if __name__ == "__main__":
     prior = json.load(
@@ -96,27 +101,24 @@ if __name__ == "__main__":
                               encoding="utf-8"
                               )
                       )
-    errov_vars = json.load(
-                           open(
-                                   ppj("IN_MODEL_SPECS", "transitions.json"), 
-                                   encoding="utf-8"
-                                   )
-                           )
+    
     
     np.random.seed(fixed["rnd_seed"])
     
-    #Load true variances and form covarince matrix     
+    # Load true variances and form covarince matrix     
     cov_12 = cov_matrix(prior)
     #Draw random samples of fac1&fac2 and fac3. Merge those to form whole sample.
     prior_all = prior_samples(cov_12, prior, fixed)
-    #Store the drawn samples.
+    # Store the drawn samples.
     with open(ppj("OUT_ANALYSIS", "prior_samples.pickle"), "wb") as out_file:
         pickle.dump(prior_all, out_file)
-    #Construct errors for transition equations of fac1 and fac2.
+    # Construct errors for transition equations of fac1 and fac2.
     tr_errors = transition_errors(fixed)
     #Store errors as pickle file.
     with open(ppj("OUT_ANALYSIS", "transition_errors.pickle"), "wb") as out_file:
         pickle.dump(tr_errors, out_file)
+    # Load true factors.    
+    true_facs= np.load(ppj("OUT_ANALYSIS", "true_facs.pickle"))
         
     
 
