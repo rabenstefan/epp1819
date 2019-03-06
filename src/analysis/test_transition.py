@@ -5,9 +5,8 @@ import pytest
 from transition import Transition
 
 if __name__ == '__main__':
-    #status = pytest.main([sys.argv[1]])
-    #sys.exit(status)
-    pytest.main()
+    status = pytest.main([sys.argv[1]])
+    sys.exit(status)
     
 @pytest.fixture
 def setup_1nonconst_factor_next_state():

@@ -7,9 +7,8 @@ from measurement import Measurement
 from scipy.stats import norm
 
 if __name__ == '__main__':
-    pytest.main()
-    #status = pytest.main([sys.argv[1]])
-    #sys.exit(status)
+    status = pytest.main([sys.argv[1]])
+    sys.exit(status)
     
 @pytest.fixture
 def setup_2obs2parts_sameparams():
