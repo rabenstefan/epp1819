@@ -7,14 +7,12 @@ import numpy as np
 import pandas as pd
 import json
 
-# =============================================================================
-# import sys, os
-# os.getcwd()
-# sys.path.insert(0,'./../../bld/')
-# from project_paths import project_paths_join as ppj
-# =============================================================================
+import sys, os
+os.getcwd()
+sys.path.insert(0,'./../../bld/')
+from project_paths import project_paths_join as ppj
 
-from bld.project_paths import project_paths_join as ppj
+#from bld.project_paths import project_paths_join as ppj
 from measurement import Measurement
 from transition import Transition
 from numpy.random import multinomial
@@ -62,13 +60,19 @@ def _find_most_probable_part(weights, parts):
         + *weights*: Normalized probability of observing a particle for each 
         particle.
         
-        + *parts*: 
+        + *parts*: 3xNxM array of particles with observations and factors.
     
-    
+    Returns: 
+        + *most_prob_parts: 3xN array containing most probable particle for
+        each observation.
+        
     """
-    
-    
-    
+    index_part = np.argmax(weights, axis=1)  
+    most_prob_part = np.empty(parts.shape[0:2])
+    for i, index in enumerate(index_part):
+        most_prob_part[:, i] = parts[:, i, index]
+        
+    return most_prob_part    
     
     
 if __name__ == "__main__":
