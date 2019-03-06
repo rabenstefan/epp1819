@@ -85,7 +85,9 @@ def _true_prior_samples(true_facs):
     
     """
     true_per_1 = ((true_facs.loc[(slice(None), 1), :]).values).T
-    true_prior = np.repeat(true_per_1[:, :, np.newaxis], 100, axis=2)
+    true_prior = np.repeat(
+                    true_per_1[:, :, np.newaxis], fixed["n_particles"], axis=2
+                        )
     
     return true_prior
 
