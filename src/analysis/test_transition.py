@@ -1,6 +1,6 @@
 import sys
 import numpy as np
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_allclose
 import pytest
 from transition import Transition
 
@@ -18,7 +18,7 @@ def setup_1nonconst_factor_next_state():
              }
     out['trans_obj'] = Transition([params],[1, 0, 0])
     out['state'] = np.array(
-                            [[[np.exp(1), np.exp(2)],[np.exp(3), np.exp(4)]],
+                            [[[1, 2],[3, 4]],
                              [[1, 1],[1, 1]],
                              [[2, 2],[2, 2]]]
                            )
@@ -74,10 +74,10 @@ def test_next_state_1nonconst_factor(
                                   setup_1nonconst_factor_next_state['state'],
                                   setup_1nonconst_factor_next_state['errors']
                                  )
-    assert_array_equal(
+    assert_allclose(
                         next_state,
                         expected_1nonconst_factor_next_state['next']
-                       )
+                   )
 def test_marginal_probability(
                                 setup_1nonconst_factor_marg_prob,
                                 expected_1nonconst_factor_marg_prob
@@ -87,7 +87,7 @@ def test_marginal_probability(
                                 setup_1nonconst_factor_marg_prob['next_state'],
                                 setup_1nonconst_factor_marg_prob['state']
                                          )
-    assert_array_equal(
+    assert_allclose(
                         marginal,
                         expected_1nonconst_factor_marg_prob['marg_prob']
-                      )
+                   )
