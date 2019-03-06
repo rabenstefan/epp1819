@@ -84,7 +84,8 @@ def _true_prior_samples(true_facs):
     """ Take true factors of period 1 as prior samples.
     
     """
-    true_per_1 = true_facs.loc[(slice(None), 1), :]
+    true_per_1 = ((true_facs.loc[(slice(None), 1), :]).values).T
+    true_prior = np.repeat(true_per_1[:, :, np.newaxis], 100, axis=2)
     
     return true_prior
 
@@ -104,21 +105,27 @@ if __name__ == "__main__":
     
     
     np.random.seed(fixed["rnd_seed"])
-    
+    true_facs= pd.read_pickle(ppj("OUT_ANALYSIS", "true_facs.pkl"))
     # Load true variances and form covarince matrix     
     cov_12 = cov_matrix(prior)
-    #Draw random samples of fac1&fac2 and fac3. Merge those to form whole sample.
+     #Draw random samples of fac1&fac2 and fac3. Merge those to form whole sample.
     prior_all = prior_samples(cov_12, prior, fixed)
     # Store the drawn samples.
     with open(ppj("OUT_ANALYSIS", "prior_samples.pickle"), "wb") as out_file:
         pickle.dump(prior_all, out_file)
-    # Construct errors for transition equations of fac1 and fac2.
+    # Load true factors of period 1.
+    true_prior = _true_prior_samples(true_facs)
+    # Store the factors of period 1.
+    with open(ppj("OUT_ANALYSIS", "true_degenerated_prior.pickle"), "wb") as out_file:
+        pickle.dump(true_prior, out_file)
+   # Construct errors for transition equations of fac1 and fac2.
     tr_errors = transition_errors(fixed)
     #Store errors as pickle file.
     with open(ppj("OUT_ANALYSIS", "transition_errors.pickle"), "wb") as out_file:
         pickle.dump(tr_errors, out_file)
-    # Load true factors.    
-    true_facs= np.load(ppj("OUT_ANALYSIS", "true_facs.pickle"))
+        
+        
+    
         
     
 
