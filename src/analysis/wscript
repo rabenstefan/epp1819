@@ -46,6 +46,15 @@ def build(ctx):
                   out_data('tables','data_table_3.dta')
            ]
     )
+    ctx(
+	features='run_py_script',
+	source='extract_true_factors.py',
+	deps = [
+		   out_data('tables','data_table_1.dta'),
+                   out_data('tables','data_table_2.dta')
+	],
+	target = out_analysis('true_facs.pkl')
+    )
 
     ctx(
         features='run_py_script',
@@ -57,7 +66,8 @@ def build(ctx):
 	deps=[
 	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'true_prior.json'),
 	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'smoother.json'),
-	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'transitions.json')
+	    ctx.path_to(ctx, 'IN_MODEL_SPECS', 'transitions.json'),
+	    ctx.path_to(ctx, 'OUT_ANALYSIS', 'true_facs.pkl')
 	]
     )
 
@@ -75,6 +85,9 @@ def build(ctx):
                     out_models('transitions.json')
                ]
     )
+
+
+		    
     
 
 
