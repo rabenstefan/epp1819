@@ -61,17 +61,17 @@ class Transition:
                                             np.exp(
                                                     self.params[nr]['phi']*
                                                     self.params[nr]['lambda']*
-                                                    np.log(a1)
+                                                    a1
                                                   )
                                             + self.params[nr]['gamma2']*
                                             np.exp(
                                                     self.params[nr]['phi']*
-                                                    np.log(a2)
+                                                    a2
                                                   )
                                             + self.params[nr]['gamma3']*
                                             np.exp(
                                                     self.params[nr]['phi']*
-                                                    np.log(a3)
+                                                    a3
                                                   )
                                         ) / (
                                                 self.params[nr]['phi']*
@@ -103,8 +103,6 @@ class Transition:
                 len(self.factor_setting) != state.shape[0]
             ):
             raise TransitionFactorSettingError
-        if np.amin(state) <= 0:
-            raise TransitionFactorValuesError
             
         next_state = np.zeros(state.shape)
         sum_trans = 0

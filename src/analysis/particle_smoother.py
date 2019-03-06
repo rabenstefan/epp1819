@@ -7,12 +7,14 @@ import numpy as np
 import pandas as pd
 import json
 
-import sys, os
-os.getcwd()
-sys.path.insert(0,'./../../bld/')
-from project_paths import project_paths_join as ppj
+# =============================================================================
+# import sys, os
+# os.getcwd()
+# sys.path.insert(0,'./../../bld/')
+# from project_paths import project_paths_join as ppj
+# =============================================================================
 
-#from bld.project_paths import project_paths_join as ppj
+from bld.project_paths import project_paths_join as ppj
 from measurement import Measurement
 from transition import Transition
 from numpy.random import multinomial
@@ -53,16 +55,13 @@ def _construct_new_particles(samples, old_particles):
     return ret_arr
 
 if __name__ == "__main__":
-    trans_params = json.load(
-                             open(
-                                     ppj("IN_MODEL_SPECS", "transitions.json"),
-                                     encoding = "utf-8"
-                                 )
-                            )
-    trans_obj = Transition(trans_params, [1, 1, 0])
-    test_state = np.array([[[1, 7],[2, 5]],[[3, 8],[1, 3]],[[5, 9],[4, 2]]])
-    test_errors = np.array([[[.5, .3],[-.1, .8]],[[-.3, -.2],[.1, -.5]]])
-    test_next = trans_obj.next_state(test_state, test_errors)
+    params = json.load(
+                        open(
+                                ppj("IN_MODEL_SPECS", "smoother.json"),
+                                encoding = "utf-8"
+                             )
+                    )
+    np.random.seed(params["rnd_seed"])
     meas_params = json.load(
                              open(
                                     ppj("IN_MODEL_SPECS", "measurements.json"),
@@ -73,26 +72,45 @@ if __name__ == "__main__":
     meas_objs = []
     for fac in f_nr:
         data = pd.read_pickle(ppj("OUT_ANALYSIS", 'meas_'+fac+'.pkl'))
-        params = []
+        params_list = []
         for param_dic in meas_params:
             if fac == param_dic['factor']:
-                params.append(param_dic)
-        meas_objs.append(Measurement(params, data))
-    probs = []
-    test_facs = np.ones((4, 4000, 100))
-    test_facs[0:3, ...] = np.array(list(range(-50, 50)))/100
-    for i, fac in enumerate(f_nr):
-        test_facs_df = pd.DataFrame(test_facs[i,...])
-        # Take logs of probabilities to take product more easily.
-        probs.append(np.log(meas_objs[i].marginal_probability(test_facs_df,1)))
-    particle_probs = np.exp(sum(probs).values)
-    # Save weights together with particles.
-    test_facs[3, ...] = (
-                         particle_probs / 
-                         np.tile(np.sum(particle_probs, axis = 1), (100, 1)).T
-                        )
-    sampling = lambda distr : multinomial(100, distr)
-    samples = np.apply_along_axis(sampling, 1, test_facs[3, ...])
-    # Construct drawn particles and save them in new array.
-    parts_constr = _construct_new_particles(samples, test_facs[0:3, ...])
+                params_list.append(param_dic)
+        meas_objs.append(Measurement(params_list, data))
+    trans_params = json.load(
+                             open(
+                                     ppj("IN_MODEL_SPECS", "transitions.json"),
+                                     encoding = "utf-8"
+                                 )
+                            )
+    trans_obj = Transition(trans_params, [1, 1, 0])
+    # History of resampled particles over periods.
+    history = []
+    # Load prior and transition errors.
+    prior = np.load(ppj("OUT_ANALYSIS", "prior_samples.pickle"))
+    trans_errors = np.load(ppj("OUT_ANALYSIS", "transition_errors.pickle"))
+    # Auxiliary function for sampling.
+    sampling = lambda distr : multinomial(params["n_particles"], distr)
+    f_nr_list = [f_nr[0:2] for i in range(params["period"])]
+    f_nr_list[0] = f_nr
+    
+    history.append(prior)
+    for per in range(params["period"]):
+        next_state = trans_obj.next_state(
+                                            history[per],
+                                            trans_errors[:,:,per,:]
+                                        )
+        probs = []
+        for i, fac in enumerate(f_nr_list[per]):
+            state_df = pd.DataFrame(next_state[i, ...])
+            # Take logs of probabilities to calculate product more easily.
+            probs.append(np.log(meas_objs[i].marginal_probability(state_df,per+1)))
+        particle_probs = np.exp(sum(probs).values)
+        weights = (
+                    particle_probs / 
+                    np.tile(np.sum(particle_probs, axis = 1), (params["n_particles"], 1)).T
+                  )
+        samples = np.apply_along_axis(sampling, 1, weights)
+        # Construct drawn particles and save them in new array.
+        history.append(_construct_new_particles(samples, next_state))
         
