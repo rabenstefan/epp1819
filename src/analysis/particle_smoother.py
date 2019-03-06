@@ -54,6 +54,23 @@ def _construct_new_particles(samples, old_particles):
         samples[indices] -= 1
     return ret_arr
 
+
+def _find_most_probable_part(weights, parts):
+    """ Find the most probable particle using their weights.
+    
+    Args:
+        + *weights*: Normalized probability of observing a particle for each 
+        particle.
+        
+        + *parts*: 
+    
+    
+    """
+    
+    
+    
+    
+    
 if __name__ == "__main__":
     params = json.load(
                         open(
