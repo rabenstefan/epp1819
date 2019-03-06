@@ -1,13 +1,17 @@
 """Transition class: provide transition equations and -probabilities.
 TransitionFactorSettingError class: exception for unfit factor settings.
-TransitionFactorValuesError class: exception for wrong factor values.
 """
 
 import numpy as np
 from scipy.stats import norm
 
 class Transition:
-    """
+    """Handle the transition equations of the different factor types for a
+    given setting (equation parameters and setting of constant and nonconstant
+    factor types) in order to calculate the next state and the marginal
+    probabilities of a state, given the next state (used in backward step of
+    particle smoother).
+    
     Instance variables:
         + parameters (list of dictionaries)
         + factor_setting (list of binaries)
@@ -185,8 +189,3 @@ class TransitionFactorSettingError(Exception):
     
     def __str__(self):
         return "Input does not fit to number of non-constant factor types."
-
-class TransitionFactorValuesError(Exception):
-    
-    def __str__(self):
-        return "Input contains non-positive factor values."
