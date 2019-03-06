@@ -7,12 +7,14 @@ import numpy as np
 import pandas as pd
 import json
 
-import sys, os
-os.getcwd()
-sys.path.insert(0,'./../../bld/')
-from project_paths import project_paths_join as ppj
+# =============================================================================
+# import sys, os
+# os.getcwd()
+# sys.path.insert(0,'./../../bld/')
+# from project_paths import project_paths_join as ppj
+# =============================================================================
 
-#from bld.project_paths import project_paths_join as ppj
+from bld.project_paths import project_paths_join as ppj
 from measurement import Measurement
 from transition import Transition
 from numpy.random import multinomial
@@ -67,7 +69,7 @@ def _find_most_probable_part(weights, parts):
         each observation.
         
     """
-    index_part = np.argmax(weights, axis=1)  
+    index_part = np.argmax(weights, axis=1)
     most_prob_part = np.empty(parts.shape[0:2])
     for i, index in enumerate(index_part):
         most_prob_part[:, i] = parts[:, i, index]
@@ -145,6 +147,24 @@ def particle_smoother():
         # Construct drawn particles and save them in new array.
         history.append(_construct_new_particles(samples, next_state))
     
+    # Backward iteration of particle smoother.
+    # =========================================
+    estimates = pd.DataFrame(
+                     data = np.zeros((params["obs"]*params["period"], 3)),
+                     columns = f_nr,
+                     index = pd.MultiIndex.from_product([
+                                                         range(1,params["obs"]+1),
+                                                         range(1,params["period"]+1)
+                                                     ]) 
+                            )
+    arr_est = _find_most_probable_part(weights, next_state)
+    estimates.loc[(slice(None),params["period"]),:] = arr_est.T
+    for per in reversed(range(1, params["period"])):
+        weights = trans_obj.marginal_probability(arr_est, history[per])
+        arr_est = _find_most_probable_part(weights, history[per])
+        estimates.loc[(slice(None), per), :] = arr_est.T
+    return estimates
+    
 if __name__ == "__main__":
-    particle_smoother()
-        
+    factors = particle_smoother()
+    factors.to_csv(ppj("OUT_ANALYSIS", "factor_estimates.csv"))
