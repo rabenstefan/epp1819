@@ -1,12 +1,17 @@
 """Transition class: provide transition equations and -probabilities.
 TransitionFactorSettingError class: exception for unfit factor settings.
-TransitionFactorValuesError class: exception for wrong factor values.
 """
 
 import numpy as np
+from scipy.stats import norm
 
 class Transition:
-    """
+    """Handle the transition equations of the different factor types for a
+    given setting (equation parameters and setting of constant and nonconstant
+    factor types) in order to calculate the next state and the marginal
+    probabilities of a state, given the next state (used in backward step of
+    particle smoother).
+    
     Instance variables:
         + parameters (list of dictionaries)
         + factor_setting (list of binaries)
@@ -78,6 +83,19 @@ class Transition:
                                                 self.params[nr]['lambda']
                                             )
         return ces(factors[0, ...], factors[1, ...], factors[2, ...])
+    
+    def _density(self, nr, x):
+        """Return value of density evaluated at x.
+        
+        Args:
+            + *nr* (integer): Factor number (**starts at 0**).
+            + *x* (np.ndarray): matrix of values
+        
+        Returns:
+            + np.ndarray of normal densities at x
+        """
+        
+        return norm.pdf(x, scale = self.sds[nr])
         
     def next_state(self, state, errors):
         """Calculate next state of all factors, given last state and normalized
@@ -120,13 +138,54 @@ class Transition:
                                      )
                 sum_trans += 1
         return next_state
+    
+    def marginal_probability(self, next_state, state):
+        """Calculate (marginal) probabilities of factors in *state*, given
+        transition equations and *next_state*. The probabilities from each
+        transition equation are multiplied among non-constant factor types
+        (due to the independence of additive errors). For constant factor
+        types, factors in *state* that do not fit to *next_state* get assigned
+        probability 0.
+        
+        Args:
+            + *next_state* (np.ndarray): Array of shape 3xN, where N is the
+                number of observations. Contains the next state of all three
+                factor types, for all observations.
+            + *state* (np.ndarray): Array of shape 3xNxM, where M is the number
+                of factors per observation and type. The three factor types are
+                the input to the transition equations.
+        
+        Returns:
+            + marginal probabilities (np.ndarray): Array of shape NxM, that
+                contains the marginal probabilities that the three-factor-
+                combinations in *state* can produce *next_state*.
+        """
+        
+        ret_arr = np.zeros(state.shape[1:])
+        # Start with constant factor types to identify fitting indices.
+        const = np.nonzero(0 == np.array(self.factor_setting))[0]
+        are_equal = np.ones(state.shape[1:])
+        for c_i in const:
+            is_equal = lambda x : next_state[c_i, :] == x
+            are_equal *= np.apply_along_axis(is_equal, 0, state[c_i, ...])
+        fit_indices = np.nonzero(are_equal)
+        fit_factors = state[:, fit_indices[0], fit_indices[1]]
+        # Calculate marg. probabilities for fitting indices.
+        nonconst = np.nonzero(self.factor_setting)[0]
+        ret_arr[fit_indices[0], fit_indices[1]] = 1
+        for nc_i in nonconst:
+            marg_prob = self._density(
+                                      nc_i,
+                                      next_state[nc_i, fit_indices[0]] -
+                                      self._transition_equation(
+                                                                nc_i,
+                                                                fit_factors
+                                                               )
+                                     )
+            ret_arr[fit_indices[0], fit_indices[1]] *= marg_prob
+        return ret_arr
         
 class TransitionFactorSettingError(Exception):
     
     def __str__(self):
         return "Input does not fit to number of non-constant factor types."
-
-class TransitionFactorValuesError(Exception):
-    
-    def __str__(self):
-        return "Input contains non-positive factor values."
