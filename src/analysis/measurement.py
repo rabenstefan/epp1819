@@ -85,15 +85,14 @@ class Measurement:
         factors, given measurements, for one period.
         
         Args:
-            + *factors* (pd.DataFrame): Dataframe with N rows and M columns
-                (excluding index), where N is number of observations and M
-                is number of factors per period and observation.
+            + *factors* (np.ndarray): Array with shape NxM, where N is number
+                of observations and M is number of factors per period and 
+                observation.
             + *period* (integer): number of period, starting at 1
             
         Returns:
-            + marginal probabilities (pd.DataFrame): Dataframe with N rows
-                and M columns, filled with according density-values, where
-                index is same as in *factors*.
+            + marginal probabilities (np.ndarray): Array with shape NxM, filled
+                with density-values of the factors at the according indices.
         """
         
         nr_obs, nr_facs = factors.shape
@@ -105,15 +104,11 @@ class Measurement:
                 raise MeasurementDimensionError
             x = (
                     np.repeat(meas.values, nr_facs, axis = 1)
-                        - self.fac_coeff[i]*factors.values
+                        - self.fac_coeff[i]*factors
                 )
             marginals *= self._density(x, var)
         
-        return pd.DataFrame(
-                                    data = marginals,
-                                    index = factors.index,
-                                    columns = factors.columns
-                            )
+        return marginals
             
             
         
