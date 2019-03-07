@@ -11,11 +11,20 @@ easily adapted to different analysis.
       distribution which is with mean zero and relevant variances.
     
 Transition errors for transition equations of factor 1 and factor 2 are 
-generated for each observation, period and and particle combinations.
+generated for each observation, period and particle combinations.
 
-Samples of factors from prior distributions are created. For each observation,
-draws_constant*draws_varying particles exist.
+Combined samples of factors from prior distributions are created. We make use
+of the cartesian product of constant and time-varying factors (for each observation)
+to form the final particle samples. Therefore, the resulting number of particles
+is number of constant factors drawn multiplied by number of draws of time-varying
+factors.
 
+To be able use have the implications for the prior sampling, we follow two process
+for forming prior sample. Function prior_samples is the resulting random sampling 
+from given prior distribution. The second prior sample is simply the true values
+of factors generated as the source data. The sampling process is followed by the 
+forming cartesian product as described above.
+ 
 Resulting arrays are stored as pickle files in "OUT_ANALYSIS" directory.
 
 """
