@@ -41,7 +41,7 @@ factors are mesurements are indexed by factor/measurement numbers and periods
 in which the first index is the number, and the second one refers to time.
 
 
-The resulted data is saved in *${PATH_OUT_DATA}/source_data*
+The resulted data is saved in *${PATH_OUT_DATA}/source_data*.
 
 
 Data management
