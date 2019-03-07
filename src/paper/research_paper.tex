@@ -16,6 +16,7 @@
 \usepackage{xcolor}
 \usepackage{subcaption}
 \usepackage{minibox}
+\usepackage{graphicx, dblfloatfix}
 % \usepackage{pdf14} % Enable for Manuscriptcentral -- can't handle pdf 1.5
 % \usepackage{endfloat} % Enable to move tables / figures to the end. Useful for some submissions.
 
@@ -69,8 +70,13 @@
 \label{sec:introduction}
 
 Filtering methods are widely used tools to estimate unobserved states of dynamic systems from noisy observed measurements. Gaussian approximations are preferred in many filtering problems. However, in case that the filtering distributions are multi-modal or that some of the state components are discrete, particle filtering based on sequential importance resampling is preferred over the Bayesian filtering methods\nocite{sarkka2013}. \par
-In this project, we apply the backward-simulation particle smoother using the model-specification in Example 2 from the Cunha, Heckman, and Schennach replication files \footnote{The link to replication files is provided here \citep{chs_rep}}. The measurement and transition equations of the model is described below. \par
-There exist three factors ($\alpha_1, \alpha_2, \alpha_3$) of which first and second ones are time varying whereas the third one is constant. At each period there are three separate measurements for each factor. It is also assumed that there are two independent control variables.  \par 
+
+In this project, we apply the backward-simulation particle smoother using the model-specification in Example 2 from the Cunha, Heckman, and Schennach replication files \footnote{The link to replication files is provided here \citep{chs_rep}}. Section II gives the model specification and data generation shortly. Section III describes the analysis. Section IV presents the results. Section V briefly discusses the results and concludes.
+
+\section{Model Specification and Data} % (fold)
+\label{sec:model spefication and data}
+
+There exist three factors ($\alpha_1, \alpha_2, \alpha_3$) of which first and second ones are time varying whereas the third one is constant. At each period there are three separate measurements for each factor. It is also assumed that there are two independent control variables ($x_1, x_2$).  \par 
 Transition equations defining the evolution of the factors are,
 \begin{align}
 & ln\alpha_{1, t+1}  = \displaystyle \frac{1}{\phi \lambda_1} ln \{ \gamma_{1, 1} e^{\phi \lambda_1 ln\alpha_{1, t}} + \gamma_{1, 2}  e^{\phi ln\alpha_{2, t}} \} + \eta_{1, t+1}, \\
@@ -79,10 +85,61 @@ Transition equations defining the evolution of the factors are,
 \end{align}
 Measurement equations on factors have the following form,
 \begin{align*}
-& \y_{k, t} = \beta_{k, 1}x_1 + \beta_{k, 2}x_2 + Z_{k, t, 1}\alpha_{i, t} + \epsilon_{k, t} ,
+y_{k, t} = \beta_{k, 1}x_1 + \beta_{k, 2}x_2 + Z_{k, t, 1}\alpha_{i, t} + \epsilon_{k, t} ,
 \end{align*}
-where k $\in \{1, 2, 3\}$
+where k $\in \{1, 2, 3\}$ for factor 1 ($i=1$), k $\in \{4, 5, 6\}$ for factor 2 ($i=2$), and k $\in \{7, 8, 9\}$ for factor 3 ($i=3$). Measurements on factor 3 are time-invariant as factor 3 is.
 
+Data generation follows from fixing the parameters of the model including all of the coefficients and variance of the errors as well as the exact prior distribution. Once we store all the measurements and factors for each period, we run the analysis.
+
+Here comes the Max............
+\section{Backward-Simulation Particle  Smoother}
+\label{sec: bakward-simulation particle smoother}
+
+\section{Results}
+\label{sec: results}
+
+$table1
+
+\begin{figure}{h!}
+	\centering
+ 		\caption{Factor 1 with randomly drawn prior}
+\includegraphics[width=0.8\textwidth]{../../../bld/out/figures/rnd_prior_boxplot_fac1.png}
+ 	
+\end{figure}
+
+\begin{figure}{h!}
+	\centering
+ 		\caption{Factor 2 with randomly drawn prior}
+\includegraphics[width=0.8\textwidth]{../figures/rnd_prior_boxplot_fac2.png}
+\end{figure}
+
+\begin{figure}{h!}
+	\centering
+ 		\caption{Factor 3 with randomly drawn prior}
+\includegraphics[width=0.8\textwidth]{../../../bld/out/figures/rnd_prior_boxplot_fac3.png}
+\end{figure}
+\begin{figure}{h!}
+	\centering
+ 		\caption{Factor 1 with true degenerate prior}
+\includegraphics[width=0.8\textwidth]{../../../bld/out/figures/deg_prior_boxplot_fac1.png}
+
+\end{figure}
+
+\begin{figure}{h!}
+	\centering
+ 		\caption{Factor 2 with true degenerate prior}
+\includegraphics[width=0.8\textwidth]{../../../bld/out/figures/deg_prior_boxplot_fac2.png}
+\end{figure}
+\begin{figure}{h!}
+	\centering
+ 		\caption{Factor 3 with true degenerate prior}
+\includegraphics[width=0.8\textwidth]{../../../bld/out/figures/deg_prior_boxplot_fac3.png}
+ 
+\end{figure}
+
+\section{Conclusion}
+
+\newpage
 
 
 
