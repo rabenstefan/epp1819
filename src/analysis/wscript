@@ -41,17 +41,17 @@ def build(ctx):
                     out_analysis('meas_fac3.pkl')
                  ],
         deps=[
-                  #out_data('tables','data_table_1.dta'),
-                  #out_data('tables','data_table_2.dta'),
-                  #out_data('tables','data_table_3.dta')
+                  out_data('tables','data_table_1.dta'),
+                  out_data('tables','data_table_2.dta'),
+                  out_data('tables','data_table_3.dta')
            ]
     )
     ctx(
 	features='run_py_script',
 	source='extract_true_factors.py',
 	deps = [
-		   #out_data('tables','data_table_1.dta'),
-                   #out_data('tables','data_table_2.dta')
+		   out_data('tables','data_table_1.dta'),
+                   out_data('tables','data_table_2.dta')
 	],
 	target = out_analysis('true_facs.pkl')
     )
