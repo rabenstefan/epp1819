@@ -68,11 +68,24 @@
 \section{Introduction} % (fold)
 \label{sec:introduction}
 
-Filtering methods are widely used tools to estimate unobserved states of dynamic systems from noisy observed measurements. Gaussian approximations are preferred in many filtering problems. However, in case that the filtering distributions are multi-modal or that some of the state components are discrete, particle filtering based on sequential importance resampling is preferred over the Bayesian filtering methods. Particular filtering is a Monte Carlo method, in which the closed form computation of the expectation over the posterior distribution is replaced by drawing samples from the distribution and estimating the quantities by sample averages (Särkkä, 2013)\nocite{sarkka2013}. \par
+Filtering methods are widely used tools to estimate unobserved states of dynamic systems from noisy observed measurements. Gaussian approximations are preferred in many filtering problems. However, in case that the filtering distributions are multi-modal or that some of the state components are discrete, particle filtering based on sequential importance resampling is preferred over the Bayesian filtering methods\nocite{sarkka2013}. \par
+In this project, we apply the backward-simulation particle smoother using the model-specification in Example 2 from the Cunha, Heckman, and Schennach replication files \footnote{The link to replication files is provided here \citep{chs_rep}}. The measurement and transition equations of the model is described below. \par
+There exist three factors ($\alpha_1, \alpha_2, \alpha_3$) of which first and second ones are time varying whereas the third one is constant. At each period there are three separate measurements for each factor. It is also assumed that there are two independent control variables.  \par 
+Transition equations defining the evolution of the factors are,
+\begin{align}
+& ln\alpha_{1, t+1}  = \displaystyle \frac{1}{\phi \lambda_1} ln \{ \gamma_{1, 1} e^{\phi \lambda_1 ln\alpha_{1, t}} + \gamma_{1, 2}  e^{\phi ln\alpha_{2, t}} \} + \eta_{1, t+1}, \\
+& ln\alpha_{2, t+1} = \gamma_{2, 2} ln\alpha_{2, t} + \eta_{2, t+1}, \\
+& \alpha_{3,t+1} = \alpha_{3,t}, \hspace{1cm} \text{for $t=1, 2, ..., 8$}
+\end{align}
+Measurement equations on factors have the following form,
+\begin{align*}
+& \y_{k, t} = \beta_{k, 1}x_1 + \beta_{k, 2}x_2 + Z_{k, t, 1}\alpha_{i, t} + \epsilon_{k, t} ,
+\end{align*}
+where k $\in \{1, 2, 3\}$
 
 
 
-$table1
+
 
 
 
