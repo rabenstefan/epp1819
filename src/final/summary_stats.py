@@ -1,16 +1,11 @@
-"""Summarise estimation results with descriptive statistics and save in
-a table.
+"""Summarise estimation results with descriptive statistics and save them in
+two tables. Specifically, the average bias and the root mean square error is
+provided for all factor types and periods.
+
 """
 
 import pandas as pd
 import sys
-
-# =============================================================================
-# import os
-# os.getcwd()
-# sys.path.insert(0,'./../../bld/')
-# from project_paths import project_paths_join as ppj
-# =============================================================================
 
 from bld.project_paths import project_paths_join as ppj
 

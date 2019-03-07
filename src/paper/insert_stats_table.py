@@ -1,16 +1,17 @@
-"""Insert table with summary statistics in the latex file."""
+"""Insert tables with summary statistics in the latex file. For each prior
+specification one DataFrame (with MultiIndex in the columns) is created,
+that contains the average biases and RMSEs of the estimation results. The
+pandas-method 'to_latex()' is used to create respective latex-representaiton
+of the tables. They replace a PLACEHOLDER in the latex-file, and the result
+is stored in a new latex-file.
+
+"""
 
 PLACEHOLDER = '$table1'
 
 import pandas as pd
 import numpy as np
 
-# =============================================================================
-# import os, sys
-# os.getcwd()
-# sys.path.insert(0,'./../../bld/')
-# from project_paths import project_paths_join as ppj
-# =============================================================================
 from bld.project_paths import project_paths_join as ppj
 
 def table_to_latex(tables):
