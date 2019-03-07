@@ -34,4 +34,19 @@ def build(ctx):
             append = prior,
             name = 'plot_differences_{}'.format(prior)
         )
+        
+        ctx(
+            features = 'run_py_script',
+            source = 'summary_stats.py',
+            target = [
+                        out_tables('{}_est_bias.csv'.format(prior)),
+                        out_tables('{}_est_rmse.csv'.format(prior))
+                     ],
+            deps = [
+                    out_analysis('{}_factor_estimates.pkl'.format(prior)),
+                    out_analysis('true_facs.pkl')
+                   ],
+            append = prior,
+            name = 'summary_stats_{}'.format(prior)
+        )
 
