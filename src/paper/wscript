@@ -2,19 +2,36 @@
 
 
 def build(ctx):
-
-    for s in 'research_paper', 'research_pres_30min':
-        ctx(
-            features='tex',
-            source=s + '.tex',
-            prompt=1,
-            name=s
-        )
-        # Install to the project root.
-        ctx.install_files(
-            ctx.env.PROJECT_PATHS['PROJECT_ROOT'].abspath(),
-            s + '.pdf'
-        )
-        # Running LaTeX processes in parallel leads to
-        # too many potential problems.
-        ctx.add_group()
+    
+    def out_paper(*args):
+        return ctx.path_to(ctx, 'OUT_PAPER', *args)
+    
+    def out_tables(*args):
+        return ctx.path_to(ctx, 'OUT_TABLES', *args)
+    
+    ctx(
+        features = 'run_py_script',
+        source = 'insert_stats_table.py',
+        target = out_paper('research_paper.tex'),
+        deps = [
+                    out_tables('rnd_prior_est_bias.csv'),
+                    out_tables('rnd_prior_est_rmse.csv'),
+                    out_tables('deg_prior_est_bias.csv'),
+                    out_tables('deg_prior_est_rmse.csv'),
+                ]
+    )
+    
+    ctx(
+        features='tex',
+        source=out_paper('research_paper.tex'),
+        prompt=1,
+        deps = out_paper('research_paper.tex'),
+        name='research_paper'
+    )
+    # Install to the project root.
+    ctx.install_files(
+        ctx.env.PROJECT_PATHS['PROJECT_ROOT'].abspath(),'research_paper.pdf'
+    )
+    # Running LaTeX processes in parallel leads to
+    # too many potential problems.
+    ctx.add_group()

@@ -11,11 +11,15 @@ class Measurement:
     equations of one factor. Provide probabilities of factors, given that.
     
     Instance variables:
-        + parameters (list of dictionaries):    Each dictionary contains
-                                                parameters of one measurement
-                                                equation.
-        + data (pd.DataFrame):  Has measurements for all measurement equations
-                                and additional controls, over all observations.
+        + *parameters* (list of dictionaries):
+            Each dictionary contains names 'beta1', 'beta2' (coefficients
+            of controls), 'z' (coefficient of factor) and 'var' (variance
+            of error). Each dictionary describes one measurement equation.
+        + *data* (pd.DataFrame):
+            Has measurements for all measurement equations and additional
+            controls, over all observations. Has MultiIndex (caseid, period)
+            and columns 'control', 'control_2', 'meas1', 'meas2', 'meas3'.
+        
     Public methods:
         + marginal_probability
     
@@ -31,18 +35,19 @@ class Measurement:
                 of controls), 'z' (coefficient of factor) and 'var' (variance
                 of error). Each dictionary describes one measurement equation.
             + *data* (pd.DataFrame):
-                Has MultiIndex (caseid, period) and columns 'control',
+                Has MultiIndex (caseid, period) and columns 'control', 
                 'control_2', 'meas1', 'meas2', 'meas3'.
         
         Created class attributes:
-            + *meas_res* (list of pd.DataFrame): DataFrame with MultiIndex
-                (caseid, period) and column that stores the residuals of
-                measurements given controls (and coefficients), for each
-                measurement equation.
-            + *fac_coeff* (list of scalars): Stores coefficient of factor for
-                each measurement equation.
-            + *variances* (list of scalars): Stores error variances for each
-                measurement equation.
+            + *meas_res* (list of pd.DataFrame):
+                DataFrame with MultiIndex (caseid, period) and column that 
+                stores the residuals of measurements given controls (and 
+                coefficients), for each measurement equation.
+            + *fac_coeff* (list of scalars):
+                Stores coefficient of factor for each measurement equation.
+            + *variances* (list of scalars):
+                Stores error variances for each measurement equation.
+                
         """
         
         self.meas_res = []
@@ -85,14 +90,17 @@ class Measurement:
         factors, given measurements, for one period.
         
         Args:
-            + *factors* (np.ndarray): Array with shape NxM, where N is number
-                of observations and M is number of factors per period and 
-                observation.
-            + *period* (integer): number of period, starting at 1
+            + *factors* (np.ndarray):
+                Array with shape NxM, where N is number of observations and M 
+                is number of factors per period and observation.
+            + *period* (integer): 
+                number of period, starting at 1
             
         Returns:
-            + marginal probabilities (np.ndarray): Array with shape NxM, filled
-                with density-values of the factors at the according indices.
+            + marginal probabilities (np.ndarray):
+                Array with shape NxM, filled with density-values of the factors
+                at the according indices.
+                
         """
         
         nr_obs, nr_facs = factors.shape
