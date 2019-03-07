@@ -113,12 +113,12 @@ if __name__ == "__main__":
      #Draw random samples of fac1&fac2 and fac3. Merge those to form whole sample.
     prior_all = prior_samples(cov_12, prior, fixed)
     # Store the drawn samples.
-    with open(ppj("OUT_ANALYSIS", "prior_samples.pickle"), "wb") as out_file:
+    with open(ppj("OUT_ANALYSIS", "true_rnd_prior.pickle"), "wb") as out_file:
         pickle.dump(prior_all, out_file)
     # Load true factors of period 1.
     true_prior = _true_prior_samples(true_facs)
     # Store the factors of period 1.
-    with open(ppj("OUT_ANALYSIS", "true_degenerated_prior.pickle"), "wb") as out_file:
+    with open(ppj("OUT_ANALYSIS", "true_deg_prior.pickle"), "wb") as out_file:
         pickle.dump(true_prior, out_file)
    # Construct errors for transition equations of fac1 and fac2.
     tr_errors = transition_errors(fixed)

@@ -6,9 +6,10 @@ Analysis.
 import numpy as np
 import pandas as pd
 import json
+import sys
 
 # =============================================================================
-# import sys, os
+# import os
 # os.getcwd()
 # sys.path.insert(0,'./../../bld/')
 # from project_paths import project_paths_join as ppj
@@ -77,20 +78,7 @@ def _find_most_probable_part(weights, parts):
     return most_prob_part    
     
     
-def particle_smoother():
-    params = json.load(
-                        open(
-                                ppj("IN_MODEL_SPECS", "smoother.json"),
-                                encoding = "utf-8"
-                             )
-                    )
-    np.random.seed(params["rnd_seed"])
-    meas_params = json.load(
-                             open(
-                                    ppj("IN_MODEL_SPECS", "measurements.json"),
-                                    encoding="utf-8"
-                                 )
-                            )
+def particle_smoother(params, meas_params, trans_params, prior, trans_errors):
     # Set up the factors and their type (non-constant or constant).
     f_nr = ['fac1', 'fac2', 'fac3']
     f_setting = [1, 1, 0]
@@ -103,20 +91,11 @@ def particle_smoother():
             if fac == param_dic['factor']:
                 params_list.append(param_dic)
         meas_objs.append(Measurement(params_list, data))
+        
     # Set up transition equations.
-    trans_params = json.load(
-                             open(
-                                     ppj("IN_MODEL_SPECS", "transitions.json"),
-                                     encoding = "utf-8"
-                                 )
-                            )
     trans_obj = Transition(trans_params, f_setting)
     # History of resampled particles over periods.
     history = []
-    # Load prior and transition errors.
-    #prior = np.load(ppj("OUT_ANALYSIS", "prior_samples.pickle"))
-    prior = np.load(ppj("OUT_ANALYSIS", "true_degenerated_prior.pickle"))
-    trans_errors = np.load(ppj("OUT_ANALYSIS", "transition_errors.pickle"))
     # Auxiliary function for sampling.
     sampling = lambda distr : multinomial(params["n_particles"], distr)
     
@@ -154,18 +133,48 @@ def particle_smoother():
                      data = np.zeros((params["obs"]*params["period"], 3)),
                      columns = f_nr,
                      index = pd.MultiIndex.from_product([
-                                                         range(1,params["obs"]+1),
-                                                         range(1,params["period"]+1)
-                                                     ]) 
+                                                    range(1,params["obs"]+1),
+                                                    range(1,params["period"]+1)
+                                                       ]) 
                             )
     arr_est = _find_most_probable_part(weights, next_state)
     estimates.loc[(slice(None),params["period"]),:] = arr_est.T
     for per in reversed(range(1, params["period"])):
+        # Weight resampled particles with probability of having produced next
+        # period's most probable particle.
         weights = trans_obj.marginal_probability(arr_est, history[per])
         arr_est = _find_most_probable_part(weights, history[per])
         estimates.loc[(slice(None), per), :] = arr_est.T
     return estimates
     
 if __name__ == "__main__":
-    factors = particle_smoother()
-    factors.to_pickle(ppj("OUT_ANALYSIS", "factor_estimates.pkl"))
+    spec = sys.argv[1]
+    # Read in parameter files.
+    params = json.load(
+                        open(
+                                ppj("IN_MODEL_SPECS", "smoother.json"),
+                                encoding = "utf-8"
+                             )
+                    )
+    np.random.seed(params["rnd_seed"])
+    meas_params = json.load(
+                             open(
+                                    ppj("IN_MODEL_SPECS", "measurements.json"),
+                                    encoding="utf-8"
+                                 )
+                            )
+    trans_params = json.load(
+                             open(
+                                     ppj("IN_MODEL_SPECS", "transitions.json"),
+                                     encoding = "utf-8"
+                                 )
+                            )
+    # Load prior and transition errors.
+    prior = np.load(ppj("OUT_ANALYSIS", "true_{}.pickle".format(spec)))
+    trans_errors = np.load(ppj("OUT_ANALYSIS", "transition_errors.pickle"))
+    # Run particle smoother.
+    factors = particle_smoother(
+                                    params, meas_params, trans_params, prior,
+                                    trans_errors
+                                )
+    factors.to_pickle(ppj("OUT_ANALYSIS", spec+"_factor_estimates.pkl"))

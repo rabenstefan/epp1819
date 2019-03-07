@@ -17,18 +17,21 @@ def build(ctx):
 
     def out_tables(*args):
         return ctx.path_to(ctx, 'OUT_TABLES', *args)
-
-    ctx(
-        features='run_py_script',
-        source='plot_differences.py',
-        target=[
-out_figures('boxplot_fac1.png'),
-out_figures('boxplot_fac2.png'),
-            out_figures('boxplot_fac3.png')
-        ],
-        deps=[
-                out_analysis('factor_estimates.pkl'),
-                out_analysis('true_facs.pkl')
-            ]
-    )
+    
+    for spec in 'rnd_prior', 'deg_prior':
+        ctx(
+            features = 'run_py_script',
+            source = 'plot_differences.py',
+            target = [
+                        out_figures('{}_boxplot_fac1.png'.format(spec)),
+                        out_figures('{}_boxplot_fac2.png'.format(spec)),
+                        out_figures('{}_boxplot_fac3.png'.format(spec))
+                     ],
+            deps = [
+                    out_analysis('{}_factor_estimates.pkl'.format(spec)),
+                    out_analysis('true_facs.pkl')
+                   ],
+            append = spec,
+            name = 'plot_differences_{}'.format(spec)
+        )
 
