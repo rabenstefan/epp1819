@@ -62,7 +62,7 @@
 
 
 \begin{abstract}
-	This study examines the performance of backward particle smoother analysis by applying the method to the model in Cunha et al. (2010). \nocite{cunha2010} Dataset is generated based on the simplified version of the model from the replication files of the study. Given that all parameters and 'true'  factors of the model are known, two analysis are conducted by which the prior sample is a random sample from the known distribution and the prior sample is the true factor values from the generated dataset. We compare the values of estimated factors to the values of true factors in each analysis. Having the true prior distribution does not contribute substantially to the estimation. In either analysis, article filtering method does not perform well in the model.... The findings has implications for the application of the particle filtering method to time varying model with small number of periods. 
+	This study examines the performance of backward particle smoother analysis by applying the method to the model in Cunha et al. (2010). The \nocite{cunha2010} dataset is generated based on the simplified version of the model from the replication files of the study. Given that all parameters and 'true'  factors of the model are known, two analyses are conducted, one where the prior sample is a random sample from the known distribution, and one where the prior 'sample' consists of the true factor values from the generated dataset. We compare the values of estimated factors to the values of true factors in each analysis. Having the true prior distribution does not contribute substantially to the estimation. In both analyses, the particle smoothing method displays a considerable bias. The findings have implications for the application of the particle filtering method to dynamic state space models with small number of periods, like in Cunha et al. (2010).
 \end{abstract}
 \clearpage
 
@@ -90,11 +90,28 @@ y_{k, t} = \beta_{k, 1}x_1 + \beta_{k, 2}x_2 + Z_{k, t, 1}\alpha_{i, t} + \epsil
 where k $\in \{1, 2, 3\}$ for factor 1 ($i=1$), k $\in \{4, 5, 6\}$ for factor 2 ($i=2$), and k $\in \{7, 8, 9\}$ for factor 3 ($i=3$). Measurements on factor 3 are time-invariant as factor 3 is.
 
 Data generation follows from fixing the parameters of the model including all of the coefficients and variance of the errors as well as the exact prior distribution. Once we store all the measurements and factors for each period, we run the analysis.
-
-Here comes the Max............
 \section{Backward-Simulation Particle  Smoother}
 \label{sec: bakward-simulation particle smoother}
-
+We apply the backward-simulation particle smoother as described in \citet{sarkka2013}, p. 167. Additionally, we use the 'bootstrap' variant (see ibd., pp. 125-127) of the particle filter, which approximates the importance distribution by the distribution given by the transition equation and the distribution of its error. Hence, the particles each step are created by putting last iteration's particles through the transition equation and adding noise. The importance distribution is optimally given by the probability of this period's state, given last period's state \textit{and the measurements up to this period}. The bootstrap-variant therefore is a significant simplification, whose approximation error has to be ameliorated by the resampling of the particles at the end of each iteration. Moreover, it is known that this variant can only compete with more sophisticated versions by means of a higher number of particles.\par
+The steps of the particle smoother are as follows:
+\begin{itemize}
+	\item Draw the first set of particles from a prior distribution. We have two specifications: in the first, the prior is true; in the second, the particles are not drawn, but are constant and set to the true factors in the first period.
+	\item Do the forward iteration, which proceeds as follows:
+	\begin{itemize}
+		\item Given the particles of last round, produce new particles by putting them through the transition equation (plus random noise).
+		\item Calculate the weight of each particle as the (normalized) probability that it produces the observed measurement in that period. The probability can be calculated by virtue of the measurement equation and a distributional assumption on the errors in it.
+		\item Resample the particles over the discrete distribution given by the weights (i.e. the same particles as before are obtained, but some appear repeatedly while others vanish)
+		\item Reiterate, given the new sample of particles.
+	\end{itemize}
+	\item At the last period, generate from the discrete distribution for that period the \textit{most likely particle} (e.g. the particle with the highest weight), which then serves as the estimate for the underlying state at that period.
+	\item Do the backward iteration:
+	\begin{itemize}
+		\item Given the estimated state next period, find new weights for each of the (resampled) particles in this period by calculating its probability to have produced next period's state. For this, use the transition equation and distributional assumptions on the errors in it.
+		\item Given the new weights, find the most likely particle in this period, which will be the estimate for the state this period. Reiterate.
+	\end{itemize}
+\end{itemize}
+The backward iteration of the particle smoother makes sure that the information that lies in the measurements of all periods is used not only for the estimation of the last period's state, but also for all the states before that.\par
+In our setting, (at least) one dimension of the state is constant over the periods (factor 3 in the baseline). This poses the challenge that in the backward iteration, ones we settle on the state-estimate for the last period, the probabilities of particles in former periods to have produced this state are 0 if the value of the constant dimension does not exactly match. We address this issue by producing the first set of particles (the prior) as a \textit{Cartesian product}: draws for the non-constant dimensions are crossed with draws for the constant dimension, so that the resulting set of particles feature several particles that have the same value in the constant dimension. This prevents the described degeneracy.
 \section{Results}
 \label{sec: results}
 
@@ -137,7 +154,7 @@ Here comes the Max............
 \end{figure}
 
 \section{Conclusion}
-
+As can be seen by visual inspection of the boxplots as well as in the columns "Avg bias" in tables 1 and 2, the bias of the particle smoother is considerable, especially for factor 2. One conjecture is that the first factor can be estimated more accurately since it is produced by a transition function in which all three factors enter, thereby disciplining its value. Overall, the results are not as good as we expected. In defense of the particle smoother, however, it must be noted that the number of particles is probably too small, both for the variant we apply (the 'bootstrap' version of the filter) and for the unusually low number of periods.
 \newpage
 
 
