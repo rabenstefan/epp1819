@@ -27,13 +27,19 @@ def table_to_latex(tables):
                                                          ),
                     data = np.zeros((nr_p, nr_f*2))
                                 ))
+        dfs[i].index.name = 'Period'
         dfs[i].loc[:, (slice(None), 'Avg bias')] = tab['bias'].values
         dfs[i].loc[:, (slice(None), 'RMSE')] = tab['rmse'].values
         
-    latex_tables = "\\begin{center} "
-    for df in dfs:
-        latex_tables += df.to_latex()+" \\end{center} \\begin{center} "
-    return latex_tables+" \\end{center}"
+    latex_tables = ""
+    descs = ["Random prior", "Degenerate prior"]
+    for i, df in enumerate(dfs):
+        latex_tables += (
+                        "\\begin{center}\\captionof{table}{"+descs[i]+"}"
+                        + df.to_latex(multicolumn_format = 'c')
+                        +" \\end{center}\n"
+                        )
+    return latex_tables
 
 
 if __name__ == '__main__':
