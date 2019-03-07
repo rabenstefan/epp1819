@@ -9,7 +9,7 @@ def build(ctx):
     # any performance penalties -- all tasks before this
     # point generally run very fast.
     ctx.add_group()
-    #ctx.recurse('data_management')
+    ctx.recurse('data_management')
     ctx.recurse('analysis')
     ctx.recurse('final')
     # Safety measure -- else the LaTeX scanner might fail because some
