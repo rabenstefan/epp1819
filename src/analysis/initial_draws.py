@@ -6,17 +6,17 @@ The script transfers the fixed parameters of the analysis from several json
 files in "IN_MODEL_SPECS" directory. This feauture enables the code being 
 easily adapted to different analysis.
     * smooth.json provides the number of observation, periods, particles as 
-    well as the random seed set for the random drawings.
+      well as the random seed set for the random drawings.
     * true_prior.json includes the variances for each factors' prior 
-    distribution which is with mean zero and relevant variances.
+      distribution which is with mean zero and relevant variances.
     
-Transition errors for transitions equations of factor 1 and factor 2 are 
+Transition errors for transition equations of factor 1 and factor 2 are 
 generated for each observation, period and and particle combinations.
 
 Samples of factors from prior distributions are created. For each observation,
-100*100=10000 particles exist.
+draws_constant*draws_varying particles exist.
 
-Tesulted arrays are stored as pickle files in "OUT_ANALYSIS" directory.
+Resulting arrays are stored as pickle files in "OUT_ANALYSIS" directory.
 
 """
 
@@ -110,7 +110,8 @@ if __name__ == "__main__":
     true_facs= pd.read_pickle(ppj("OUT_ANALYSIS", "true_facs.pkl"))
     # Load true variances and form covarince matrix     
     cov_12 = cov_matrix(prior)
-     #Draw random samples of fac1&fac2 and fac3. Merge those to form whole sample.
+     #Draw random samples of fac1&fac2 and fac3.
+     #Merge those to form whole sample.
     prior_all = prior_samples(cov_12, prior, fixed)
     # Store the drawn samples.
     with open(ppj("OUT_ANALYSIS", "true_rnd_prior.pickle"), "wb") as out_file:
@@ -123,7 +124,7 @@ if __name__ == "__main__":
    # Construct errors for transition equations of fac1 and fac2.
     tr_errors = transition_errors(fixed)
     #Store errors as pickle file.
-    with open(ppj("OUT_ANALYSIS", "transition_errors.pickle"), "wb") as out_file:
+    with open(ppj("OUT_ANALYSIS","transition_errors.pickle"),"wb") as out_file:
         pickle.dump(tr_errors, out_file)
         
         
