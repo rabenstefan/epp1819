@@ -1,5 +1,7 @@
-"""
-Analysis.
+"""Implementation of bootstrap backward-simulation particle smoother for
+three-factor (nonlinear) state-space system. The smoother calculates its
+estimate of the underlying states (factors) for all provided observations at
+once.
 
 """
 
@@ -60,16 +62,17 @@ def _find_most_probable_part(weights, parts):
     """ Find the most probable particle using their weights.
     
     Args:
-        + *weights*: Normalized probability of observing a particle for each 
-        particle.
-        
-        + *parts*: 3xNxM array of particles with observations and factors.
+        + *weights* (np.ndarray): NxM array containing normalized probability 
+            of observing a particle for each particle.
+        + *parts* (np.ndarray): 3xNxM array of particles with observations and
+            factors.
     
     Returns: 
-        + *most_prob_parts: 3xN array containing most probable particle for
-        each observation.
+        + most_prob_parts (np.ndarray): 3xN array containing most probable
+            particle for each observation.
         
     """
+    
     index_part = np.argmax(weights, axis=1)
     most_prob_part = np.empty(parts.shape[0:2])
     for i, index in enumerate(index_part):
@@ -79,6 +82,31 @@ def _find_most_probable_part(weights, parts):
     
     
 def particle_smoother(params, meas_params, trans_params, prior, trans_errors):
+    """Estimate unobserved states of (nonlinear) state-space system for many
+    observations, using the (bootstrap) backward-simulation particle smoother.
+    
+    Args:
+        + *params* (dictionary): Contains basic properties of the estimation.
+        + *meas_params* (list of dictionaries): A list containing a dictionary
+            with parameters for each measurement equation in the model.
+        + *trans_params* (list of dictionaries): A list that contains a
+            dictionary with parameters for each transition equation in the
+            model.
+        + *prior* (np.ndarray): 3xNxM-array, where N is the number of
+            observations and M the number of particles, that contains the
+            particles (each consisting of three factors) used in the first
+            step of the particle smoother.
+        + *trans_errors* (np.ndarray): HxNxPxM-array, where H<=3 is the number
+            of non-constant factor types and P is the number of periods per
+            observation, that contains the additive errors to the transition
+            equations, drawn for each observation, period and particle.
+    
+    Returns:
+        + estimates of factors (pd.DataFrame): DataFrame with MultiIndex
+            (observation, period) and columns 'facX' (X in 1,2,3) that contains
+            the estimated values of each factor per observation and period.
+    """
+    
     # Set up the factors and their type (non-constant or constant).
     f_nr = ['fac1', 'fac2', 'fac3']
     f_setting = [1, 1, 0]
@@ -124,7 +152,7 @@ def particle_smoother(params, meas_params, trans_params, prior, trans_errors):
                             ).T
                   )
         samples = np.apply_along_axis(sampling, 1, weights)
-        # Construct drawn particles and save them in new array.
+        # Construct drawn particles and save them in history.
         history.append(_construct_new_particles(samples, next_state))
     
     # Backward iteration of particle smoother.
