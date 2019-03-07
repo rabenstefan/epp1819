@@ -34,7 +34,8 @@ def build(ctx):
     )
     # Install to the project root.
     ctx.install_files(
-        ctx.env.PROJECT_PATHS['PROJECT_ROOT'].abspath(),'research_paper.pdf'
+        ctx.env.PROJECT_PATHS['PROJECT_ROOT'].abspath(),
+        out_paper('research_paper.pdf')
     )
     # Running LaTeX processes in parallel leads to
     # too many potential problems.

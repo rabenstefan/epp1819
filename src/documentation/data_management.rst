@@ -1,8 +1,8 @@
 .. _data_management:
 
-***************
+******************************
 Data Generation and Management
-***************
+*******************************
 
 
 Data management section consists of two folds: generation of the 
@@ -13,7 +13,7 @@ the *Example 2* in `chs replication files`__.
 __ chs_
 
 Data generation
-----------------
+===============
 
 In the file :file:`src/data_management/generate_data.do`, the source data 
 including factors and measurements for each period as well as the control 
@@ -45,7 +45,7 @@ The resulted data is saved in *${PATH_OUT_DATA}/source_data*
 
 
 Data management
-------------------
+================
 
 
 In the file :file:`src/data_management/data_management.do", we organize the

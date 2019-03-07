@@ -112,9 +112,11 @@ The steps of the particle smoother are as follows:
 \end{itemize}
 The backward iteration of the particle smoother makes sure that the information that lies in the measurements of all periods is used not only for the estimation of the last period's state, but also for all the states before that.\par
 In our setting, (at least) one dimension of the state is constant over the periods (factor 3 in the baseline). This poses the challenge that in the backward iteration, ones we settle on the state-estimate for the last period, the probabilities of particles in former periods to have produced this state are 0 if the value of the constant dimension does not exactly match. We address this issue by producing the first set of particles (the prior) as a \textit{Cartesian product}: draws for the non-constant dimensions are crossed with draws for the constant dimension, so that the resulting set of particles feature several particles that have the same value in the constant dimension. This prevents the described degeneracy.
+\newpage
 \section{Results}
 \label{sec: results}
 
+$table1
 
 \begin{figure}
 	\centering
