@@ -22,8 +22,7 @@
 
 
 \usepackage{natbib}
-\bibliographystyle{rusnat}
-
+\bibliographystyle{plainnat}
 
 
 
@@ -50,13 +49,11 @@
 
 \begin{document}
 
-\title{EPP Final Project\thanks{Elif Bodur , Uni Bonn. Email: \href{mailto:elifbodur@uni-bonn.de}{\nolinkurl{elifbodur [at] uni-bonn [dot] de}}.}}
+\title{Particle Smoother Method in Estimating the Technology of Skill Formation  \thanks{Template of this study is by \citep{GaudeckerEconProjectTemplates}}}
 
-\author{Elif Bodur }
+\author{Elif Bodur \\ Maximilian Weiß}
 
 \date{
-{\bf Preliminary -- please do not quote} 
-\\[1ex] 
 \today
 }
 
@@ -64,46 +61,25 @@
 
 
 \begin{abstract}
-	Some abstract here.
+	This study examines the performance of backward particle smoother analysis by applying the method to the model in Cunha et al. (2010). \nocite{cunha2010} Dataset is generated based on the simplified version of the model from the replication files of the study. Given that all parameters and 'true'  factors of the model are known, two analysis are conducted by which the prior sample is a random sample from the known distribution and the prior sample is the true factor values from the generated dataset. We compare the values of estimated factors to the values of true factors in each analysis. Having the true prior distribution does not contribute substantially to the estimation. In either analysis, article filtering method does not perform well in the model.... The findings has implications for the application of the particle filtering method to time varying model with small number of periods. 
 \end{abstract}
 \clearpage
 
 \section{Introduction} % (fold)
 \label{sec:introduction}
 
-If you are using this template, please cite this item from the references: \citet{GaudeckerEconProjectTemplates}
-
-The running example is \citeauthor{Albouy12}'s \citeyear{Albouy12} replication study of \citeauthor{AcemogluJohnsonRobinson01}'s classic \citeyear{AcemogluJohnsonRobinson01} paper. The code is a split-up and modified version of what is found accompanying the paper at \url{http://dx.doi.org/10.1257/aer.102.6.3059}.
-
-It is often useful to include formulas in both the paper and the presentation, so we keep them in a subdirectory. As an example, let's use the simple IV system:
-\input{formulas/iv}
-with the well-known assumptions.
-
-The remaining tables and figures are included without annotations.\\[4ex]
-
-% section introduction (end)
-
-
-\input{../../out/tables/table1_reg_on_indicators.tex}
+Filtering methods are widely used tools to estimate unobserved states of dynamic systems from noisy observed measurements. Gaussian approximations are preferred in many filtering problems. However, in case that the filtering distributions are multi-modal or that some of the state components are discrete, particle filtering based on sequential importance resampling is preferred over the Bayesian filtering methods. Particular filtering is a Monte Carlo method, in which the closed form computation of the expectation over the posterior distribution is replaced by drawing samples from the distribution and estimating the quantities by sample averages (Särkkä, 2013)\nocite{sarkka2013}. \par
 
 
 
-\begin{figure}
-    \centering
-    \includegraphics[width=.85\textwidth]{../../out/figures/risk_mort}
-\end{figure}
-
-
-\begin{figure}
-    \centering
-    \includegraphics[width=.85\textwidth]{../../out/figures/gdp_mort}
-\end{figure}
+$table1
 
 
 
-\input{../../out/tables/table2_first_stage_est.tex}
 
-\input{../../out/tables/table3_second_stage_est.tex}
+
+
+
 
 \clearpage
 
