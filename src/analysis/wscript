@@ -72,23 +72,23 @@ def build(ctx):
     	]
     )
     
-    for spec in 'rnd_prior', 'deg_prior':
+    for prior in 'rnd_prior', 'deg_prior':
         ctx(
         	features = 'run_py_script',
         	source = 'particle_smoother.py',
-            target = out_analysis('{}_factor_estimates.pkl'.format(spec)),
+            target = out_analysis('{}_factor_estimates.pkl'.format(prior)),
             deps = [
                         out_analysis('meas_fac1.pkl'),
                         out_analysis('meas_fac2.pkl'),
                         out_analysis('meas_fac3.pkl'),
-                        out_analysis('true_{}.pickle'.format(spec)),
+                        out_analysis('true_{}.pickle'.format(prior)),
                         out_analysis('transition_errors.pickle'),
     		            out_models('measurements.json'),
                         out_models('smoother.json'),
                         out_models('transitions.json')
                    ],
-            append = spec,
-            name = 'particle_smoother_{}'.format(spec)
+            append = prior,
+            name = 'particle_smoother_{}'.format(prior)
         )
 
 
