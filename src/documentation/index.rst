@@ -4,14 +4,13 @@
 .. but it should at least contain the `toctree` directive.
 
 
-Welcome to the EPP Assignment 6 project's documentation!
+EPP WS 18/19 Final Project: Documentation
 ===============================================================================
 
 .. toctree::
     :maxdepth: 2
 
     introduction
-    original_data
     data_management
     analysis
     final
