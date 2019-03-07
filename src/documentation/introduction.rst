@@ -73,6 +73,8 @@ true prior (i.e. the first particles are drawn from the same distribution that t
 true factors are drawn from). Therefore, the formerly mentioned parameters are
 accessed both in :ref:`data_management` and in :ref:`analysis`.
 
+.. _prior_specs:
+
 Two "prior" specifications
 ===========================
 

@@ -1,15 +1,13 @@
-"""Plot differences between estimated and true factors."""
+"""Make a boxplot of the differences between estimated and true factors. For
+each factor type and each period, one boxplot (over all observations) is
+created (note that for the constant factor 3, only one period exists). The
+boxplots visualize the median and the spread of the estimation biases.
+
+"""
 
 import pandas as pd
 import seaborn as sns
 import sys
-
-# =============================================================================
-# import os
-# os.getcwd()
-# sys.path.insert(0,'./../../bld/')
-# from project_paths import project_paths_join as ppj
-# =============================================================================
 
 from bld.project_paths import project_paths_join as ppj
 
