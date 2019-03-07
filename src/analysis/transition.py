@@ -13,8 +13,16 @@ class Transition:
     particle smoother).
     
     Instance variables:
-        + parameters (list of dictionaries)
-        + factor_setting (list of binaries)
+        + *parameters* (list of dictionaries):
+            Each dictionary contains names 'phi', 'lambda', 'gammaX' (X in 
+            1, 2, 3), and 'var_u' (for variance of additive error). Each
+            dictionary describes one transition equation.
+        + *factor_setting* (list of binaries):
+            Each binary describes the transition of one factor type, where
+            '1' stands for the transition equation in *parameters* whose
+            list-position is equal to the position of the binary, and '0'
+            stands for a constant factor type (no transition). Is expected
+            to **be of length 3**.
         
     Public methods:
         + next_state
@@ -26,16 +34,16 @@ class Transition:
         the setting of transitions for the factor types.
         
         Args:
-            + *parameters* (list of dictionaries): Each dictionary contains
-                names 'phi', 'lambda', 'gammaX' (X in 1, 2, 3), and 'var_u'
-                (for variance of additive error). Each dictionary describes
-                one transition equation.
-            + *factor_setting* (list of binaries (0 or 1)): Each binary
-                describes the transition of one factor type, where '1' stands 
-                for the transition equation in *parameters* whose list-position
-                is equal to the position of the binary, and '0' stands for a
-                constant factor type (no transition).
-                Is expected to **be of length 3**.
+            + *parameters* (list of dictionaries):
+                Each dictionary contains names 'phi', 'lambda', 'gammaX' (X in 
+                1, 2, 3), and 'var_u' (for variance of additive error). Each
+                dictionary describes one transition equation.
+            + *factor_setting* (list of binaries (0 or 1)):
+                Each binary describes the transition of one factor type, where
+                '1' stands for the transition equation in *parameters* whose
+                list-position is equal to the position of the binary, and '0'
+                stands for a constant factor type (no transition). Is expected
+                to **be of length 3**.
         
         Created class attributes:
             + *params* (list of dictionaries)
@@ -50,14 +58,18 @@ class Transition:
         """Calculate (expected) next state of one factor, given inputs.
         
         Args:
-            + *nr* (integer): Factor number to which transition equation
-                belongs (**starts at 0**).
-            + *factors* (np.ndarray): Array of arbitrary shape, but with
-                **first dimension of length 3** (is taken as the three inputs).
+            + *nr* (integer):
+                Factor number to which transition equation belongs (**starts at
+                0**).
+            + *factors* (np.ndarray):
+                Array of arbitrary shape, but with **first dimension of length
+                3** (is taken as the three inputs).
         
         Returns:
-            + expected next state of factor type *nr* (np.ndarray): Array with
-                same shape as *factors*, but first dimension is 'flat'
+            + expected next state of factor type *nr* (np.ndarray):
+                Array with same shape as *factors*, but first dimension is
+                'flat'
+                
         """
         
         # Define CES-function with parameters from factor type *nr*.
@@ -102,18 +114,20 @@ class Transition:
         errors.
         
         Args:
-            + *state* (np.ndarray): Array of arbitrary shape, but with
-                **first dimension of length 3** (is taken as the three factor
-                types). Contains state for one period over all observations and
-                particles.
-            + *errors* (np.ndarray): Array of **same shape as *state* **, but
-                first dimension only as long as number of non-constant factors.
-                Contains additive, normalized errors to transition equations.
-                They are attributed to factor types along first dimension, 
-                sorted from first to last non-constant factor type.
+            + *state* (np.ndarray):
+                Array of arbitrary shape, but with **first dimension of length
+                3** (is taken as the three factor types). Contains state for
+                one period over all observations and particles.
+            + *errors* (np.ndarray):
+                Array of **same shape as *state***, but first dimension only
+                as long as number of non-constant factors. Contains additive,
+                normalized errors to transition equations. They are attributed
+                to factor types along first dimension, sorted from first to
+                last non-constant factor type.
         
         Returns:
             + next state of factors (np.ndarray): Has same shape as *state*.
+            
         """
     
         if (
@@ -148,17 +162,21 @@ class Transition:
         probability 0.
         
         Args:
-            + *next_state* (np.ndarray): Array of shape 3xN, where N is the
-                number of observations. Contains the next state of all three
-                factor types, for all observations.
-            + *state* (np.ndarray): Array of shape 3xNxM, where M is the number
-                of factors per observation and type. The three factor types are
-                the input to the transition equations.
+            + *next_state* (np.ndarray):
+                Array of shape 3xN, where N is the number of observations.
+                Contains the next state of all three factor types, for all
+                observations.
+            + *state* (np.ndarray):
+                Array of shape 3xNxM, where M is the number of factors per
+                observation and type. The three factor types are the input to
+                the transition equations.
         
         Returns:
-            + marginal probabilities (np.ndarray): Array of shape NxM, that
-                contains the marginal probabilities that the three-factor-
-                combinations in *state* can produce *next_state*.
+            + marginal probabilities (np.ndarray):
+                Array of shape NxM, that contains the marginal probabilities
+                that the three-factor-combinations in *state* can produce
+                *next_state*.
+                
         """
         
         ret_arr = np.zeros(state.shape[1:])

@@ -16,7 +16,6 @@ def set_project_paths(ctx):
     pp = OrderedDict()
     pp["PROJECT_ROOT"] = "."
     pp["IN_DATA"] = "src/original_data/"
-    pp["IN_MODEL_CODE"] = "src/model_code"
     pp["IN_MODEL_SPECS"] = "src/model_specs"
     pp["LIBRARY"] = "src/library"
     pp["BLD"] = ""
@@ -80,6 +79,7 @@ def configure(ctx):
     ctx.env.PDFLATEXFLAGS = "-shell-escape"
     ctx.load("run_py_script")
     ctx.load("run_do_script")
+    ctx.load("sphinx_build")
     ctx.load("write_project_headers")
     # ctx.find_program("dot")
     ctx.load("tex")
