@@ -25,7 +25,7 @@ log using `"${PATH_OUT_DATA}/log/`1'.log"', replace
 
 
 // Read in the model controls
- // measurements, transition ve json file'lari okuyacak.
+
 do `"${PATH_OUT_MODEL_SPECS}/measurements"'
 do `"${PATH_OUT_MODEL_SPECS}/transitions"'
 do `"${PATH_OUT_MODEL_SPECS}/true_prior"'
